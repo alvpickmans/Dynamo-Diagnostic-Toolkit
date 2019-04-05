@@ -1,55 +1,68 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using Dynamo.Core;
+using Dynamo.Engine.CodeGeneration;
+using Dynamo.Events;
 using Dynamo.Extensions;
 using Dynamo.Graph.Nodes;
+using Dynamo.Graph.Workspaces;
+using Dynamo.Models;
 
 namespace DiagnosticToolkit
 {
     public class DiagnosticToolkitWindowViewModel : NotificationObject, IDisposable
     {
-        private string activeNodeTypes;
         private ReadyParams readyParams;
+        private DynamoModel dynamoModel;
+        private DiagnosticsSession session;
+        private string statfile;
+        private static PerformanceStatistics statistics = new PerformanceStatistics();
+        private static WorkspaceModel ws;
 
-        // Displays active nodes in the workspace
-        public string ActiveNodeTypes
-        {
-            get
-            {
-                activeNodeTypes = getNodeTypes();
-                return activeNodeTypes;
-            }
-        }
+        public static IQueryNodePerformance NodePerformance { get { return statistics; } }
 
-        // Helper function that builds string of active nodes
-        public string getNodeTypes()
-        {
-            string output = "Active nodes:\n";
-
-            foreach (NodeModel node in readyParams.CurrentWorkspaceModel.Nodes)
-            {
-                string nickName = node.Name;
-                output += nickName + "\n";
-            }
-
-            return output;
-        }
-
-        public DiagnosticToolkitWindowViewModel(ReadyParams p)
+        public DiagnosticToolkitWindowViewModel(ReadyParams p, DynamoModel model)
         {
             readyParams = p;
-            p.CurrentWorkspaceModel.NodeAdded += CurrentWorkspaceModel_NodesChanged;
-            p.CurrentWorkspaceModel.NodeRemoved += CurrentWorkspaceModel_NodesChanged;
+            dynamoModel = model;
+            HomeWorkspaceModel homeWorkspaceModel = p.CurrentWorkspaceModel as HomeWorkspaceModel;
+
+            //Creates statistic XML files, if file exsists load that.
+            statfile = Path.Combine(model.PathManager.UserDataDirectory, "Statistics.xml");
+            if (File.Exists(statfile))
+                statistics = PerformanceStatistics.Load(statfile);
+            ws = readyParams.WorkspaceModels.OfType<HomeWorkspaceModel>().First();
+            SetupDiagnosticsSession(ws);
+
+            homeWorkspaceModel.EvaluationCompleted += Hwm_EvaluationCompleted;
+
         }
 
-        private void CurrentWorkspaceModel_NodesChanged(NodeModel obj)
+        private void Hwm_EvaluationCompleted(object sender, EvaluationCompletedEventArgs e)
         {
-            RaisePropertyChanged("ActiveNodeTypes");
+            DiagnosticsSession test = session;
+            PerformanceStatistics statTest = statistics;
+        }
+
+        private void SetupDiagnosticsSession(IWorkspaceModel model)
+        {
+            if (session != null)
+            {
+                if (session.WorkSpace == model) return;
+
+                session.Dispose();
+                session = null;
+            }
+            if (model != null)
+            {
+                session = new DiagnosticsSession(model, statistics);
+            }
         }
 
         public void Dispose()
         {
-            readyParams.CurrentWorkspaceModel.NodeAdded -= CurrentWorkspaceModel_NodesChanged;
-            readyParams.CurrentWorkspaceModel.NodeRemoved -= CurrentWorkspaceModel_NodesChanged;
+
         }
     }
 }
