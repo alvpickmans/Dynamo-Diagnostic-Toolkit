@@ -5,6 +5,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Dynamo.Wpf.Extensions;
+using Dynamo.Engine.CodeGeneration;
+using Dynamo.ViewModels;
+using Dynamo.Models;
 
 namespace DiagnosticToolkit
 {
@@ -25,6 +28,8 @@ namespace DiagnosticToolkit
     public class DiagnosticToolkitViewExtension : IViewExtension
     {
         private MenuItem sampleMenuItem;
+        private DynamoViewModel vm;
+        private DynamoModel model;
 
         public void Dispose()
         {
@@ -39,6 +44,9 @@ namespace DiagnosticToolkit
             // Save a reference to your loaded parameters.
             // You'll need these later when you want to use
             // the supplied workspaces
+            model = p.DynamoWindow.DataContext as DynamoModel;
+
+            AstCompilationEvents.PreCompilation += AstCompilationEvents_PreCompilation;
 
             sampleMenuItem = new MenuItem { Header = "Show View Extension Sample Window" };
             sampleMenuItem.Click += (sender, args) =>
@@ -60,6 +68,11 @@ namespace DiagnosticToolkit
                 window.Show();
             };
             p.AddMenuItem(MenuBarType.View, sampleMenuItem);
+        }
+
+        private void AstCompilationEvents_PreCompilation(object sender, CompilationEventArgs e)
+        {
+            model.Logger.Log("Its worrrrking");
         }
 
         public void Shutdown()

@@ -53,8 +53,8 @@
       <HintPath>..\packages\DynamoVisualProgramming.Core.2.0.2.6986\lib\net45\DynamoApplications.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="DynamoCore, Version=2.0.2.6986, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamoVisualProgramming.Core.2.0.2.6986\lib\net45\DynamoCore.dll</HintPath>
+    <Reference Include="DynamoCore">
+      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoCore.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DynamoCoreWpf, Version=2.0.2.6986, Culture=neutral, processorArchitecture=MSIL">
@@ -140,6 +140,15 @@
       <DependentUpon>DiagnosticToolkitWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Old\BarChart.xaml.cs" />
+    <Compile Include="src\Old\Converters.cs" />
+    <Compile Include="src\Old\DiagnosticsAdorner.cs" />
+    <Compile Include="src\Old\DiagnosticsExtension.cs" />
+    <Compile Include="src\Old\DiagnosticsSession.cs" />
+    <Compile Include="src\Old\DiagnosticsView.xaml.cs" />
+    <Compile Include="src\Old\NodeView.xaml.cs" />
+    <Compile Include="src\Old\PerformanceData.cs" />
+    <Compile Include="src\Old\PerformanceStatistics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="src\DiagnosticToolkitWindow.xaml">
@@ -164,7 +173,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <DynamoVersion>2.0</DynamoVersion>
+    <DynamoVersion>2.3</DynamoVersion>
     <PackageName>DiagnosticToolkit</PackageName>
     <PackageFolder>$(ProjectDir)dist\$(PackageName)\</PackageFolder>
     <BinFolder>$(PackageFolder)bin\</BinFolder>
