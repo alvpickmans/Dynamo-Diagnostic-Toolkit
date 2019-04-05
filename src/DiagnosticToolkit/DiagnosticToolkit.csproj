@@ -139,6 +139,9 @@
       <DependentUpon>DiagnosticToolkitWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Utilities\NodeViewCollector.cs" />
+    <Compile Include="src\Utilities\NodeViewModifier.cs" />
+    <Compile Include="src\Utilities\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="src\DiagnosticToolkitWindow.xaml">
