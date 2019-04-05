@@ -18,6 +18,11 @@ namespace DiagnosticToolkit
                 activeNodeTypes = getNodeTypes();
                 return activeNodeTypes;
             }
+            set
+            {
+                activeNodeTypes = value;
+                RaisePropertyChanged("ActiveNOdeTypes");
+            }
         }
 
         // Helper function that builds string of active nodes

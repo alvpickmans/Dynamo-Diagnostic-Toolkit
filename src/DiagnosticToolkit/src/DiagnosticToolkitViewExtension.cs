@@ -48,7 +48,7 @@ namespace DiagnosticToolkit
 
             AstCompilationEvents.PreCompilation += AstCompilationEvents_PreCompilation;
 
-            sampleMenuItem = new MenuItem { Header = "Show View Extension Sample Window" };
+            sampleMenuItem = new MenuItem { Header = "DT | Diagnostic Tool" };
             sampleMenuItem.Click += (sender, args) =>
             {
                 var viewModel = new DiagnosticToolkitWindowViewModel(p);
@@ -61,8 +61,8 @@ namespace DiagnosticToolkit
                     Owner = p.DynamoWindow
                 };
 
-                window.Left = window.Owner.Left + 400;
-                window.Top = window.Owner.Top + 200;
+                //window.Left = window.Owner.Left + 400;
+                //window.Top = window.Owner.Top + 200;
 
                 // Show a modeless window.
                 window.Show();
