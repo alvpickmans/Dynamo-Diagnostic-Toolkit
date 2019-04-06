@@ -53,8 +53,7 @@
       <HintPath>..\packages\DynamoVisualProgramming.Core.2.0.2.6986\lib\net45\DynamoApplications.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="DynamoCore, Version=2.3.0.4593, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="DynamoCore">
       <HintPath>..\..\DynamoSandbox\DynamoCore.dll</HintPath>
     </Reference>
     <Reference Include="DynamoCoreWpf, Version=2.0.2.6986, Culture=neutral, processorArchitecture=MSIL">
@@ -168,7 +167,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <DynamoVersion>2.3</DynamoVersion>
+    <DynamoVersion>2.1</DynamoVersion>
     <PackageName>DiagnosticToolkit</PackageName>
     <PackageFolder>$(ProjectDir)dist\$(PackageName)\</PackageFolder>
     <BinFolder>$(PackageFolder)bin\</BinFolder>
