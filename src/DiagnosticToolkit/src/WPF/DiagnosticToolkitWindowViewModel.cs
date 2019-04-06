@@ -34,7 +34,7 @@ namespace DiagnosticToolkit
             HomeWorkspaceModel homeWorkspaceModel = p.CurrentWorkspaceModel as HomeWorkspaceModel;
 
             //Creates statistic XML files, if file exsists load that.
-            statfile = Path.Combine(model.PathManager.UserDataDirectory, "Statistics.xml");
+            statfile = Path.Combine(model.PathManager.UserDataDirectory, "Statistics.json");
             if (File.Exists(statfile))
                 statistics = PerformanceStatistics.Load(statfile);
             ws = readyParams.WorkspaceModels.OfType<HomeWorkspaceModel>().First();

@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Nodes.CustomNodes;
 using Dynamo.Graph.Nodes.ZeroTouch;
+using Newtonsoft.Json;
 
 namespace DiagnosticToolkit
 {
@@ -22,12 +23,10 @@ namespace DiagnosticToolkit
 
         public string NickName { get; set; }
 
-        [XmlArray]
-        public List<PerformanceData> Performance { get; set; }
+        public List<PerformanceData> Performance = new List<PerformanceData>();
 
         public NodeStatistics()
         {
-            Performance = new List<PerformanceData>();
         }
 
         public NodeStatistics(string Name, Guid guid, string nickname)
@@ -35,7 +34,6 @@ namespace DiagnosticToolkit
             this.Name = Name;
             this.GUID = guid;
             this.NickName = nickname;
-            Performance = new List<PerformanceData>();
         }
     }
 
@@ -49,7 +47,12 @@ namespace DiagnosticToolkit
     /// </summary>
     public class PerformanceStatistics : IQueryNodePerformance
     {
-        private Dictionary<Guid, NodeStatistics> statistics = new Dictionary<Guid, NodeStatistics>();
+        private Dictionary<Guid, NodeStatistics> statistics { get; set; }
+
+        public PerformanceStatistics()
+        {
+            statistics = new Dictionary<Guid, NodeStatistics>();
+        }
 
         public void AddPerformanceData(NodeModel node, PerformanceData data)
         {
@@ -94,7 +97,6 @@ namespace DiagnosticToolkit
             return node.GetType().FullName;
         }
 
-        [XmlArray]
         public List<NodeStatistics> Data 
         { 
             get
@@ -117,11 +119,8 @@ namespace DiagnosticToolkit
 
             try
             {
-                var serializer = new XmlSerializer(typeof(PerformanceStatistics), new[] { typeof(NodeStatistics), typeof(PerformanceData) });
-                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                {
-                    return serializer.Deserialize(fs) as PerformanceStatistics;
-                }
+                string file = File.ReadAllText(filePath);
+                return JsonConvert.DeserializeObject<PerformanceStatistics>(file);
             }
             catch (Exception ex)
             {
@@ -134,10 +133,10 @@ namespace DiagnosticToolkit
 
         public void Save(string filePath)
         {
-            var serializer = new XmlSerializer(typeof(PerformanceStatistics), new[] { typeof(NodeStatistics), typeof(PerformanceData) });
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            using (StreamWriter file = File.CreateText(filePath))
             {
-                serializer.Serialize(fs, this);
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, this);
             }
         }
     }
