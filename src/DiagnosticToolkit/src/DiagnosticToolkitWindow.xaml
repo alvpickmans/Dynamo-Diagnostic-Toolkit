@@ -86,10 +86,10 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Name="Top" Height="35"/>
-                    <RowDefinition Name="Main" Height="64*"/>
-                    <RowDefinition Name="Progress" Height="20"/>
-                    <RowDefinition Name="Bottom" Height="35"/>
+                    <RowDefinition Name="TopRow" Height="35"/>
+                    <RowDefinition Name="MainRow" Height="64*"/>
+                    <RowDefinition Name="ProgressRow" Height="20"/>
+                    <RowDefinition Name="BottomRow" Height="35"/>
                 </Grid.RowDefinitions>
                 <ListBox Grid.Row="1" Grid.ColumnSpan="3" />
                 <Controls:MetroProgressBar 
