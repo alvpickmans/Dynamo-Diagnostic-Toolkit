@@ -22,6 +22,11 @@ namespace DiagnosticToolkit
 
         public static IQueryNodePerformance NodePerformance { get { return statistics; } }
 
+        public void SaveData()
+        {
+            statistics.Save(statfile);
+        }
+
         public DiagnosticToolkitWindowViewModel(ReadyParams p, DynamoModel model)
         {
             readyParams = p;

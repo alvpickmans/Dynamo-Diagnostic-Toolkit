@@ -34,7 +34,9 @@ namespace DiagnosticToolkit
         private MenuItem sampleMenuItem;
         private DynamoViewModel vm;
         private DynamoModel model;
-        
+
+        DiagnosticToolkitWindowViewModel diagnosticViewModel { get; set; }
+
 
         public void Dispose()
         {
@@ -57,11 +59,11 @@ namespace DiagnosticToolkit
             sampleMenuItem = new MenuItem { Header = "DynaNostic" };
             sampleMenuItem.Click += (sender, args) =>
             {
-                var viewModel = new DiagnosticToolkitWindowViewModel(p, model);
+                diagnosticViewModel = new DiagnosticToolkitWindowViewModel(p, model);
                 var window = new DiagnosticToolkitWindow
                 {
                     // Set the data context for the main grid in the window.
-                    MainGrid = { DataContext = viewModel },
+                    MainGrid = { DataContext = diagnosticViewModel },
 
                     // Set the owner of the window to the Dynamo window.
                     Owner = p.DynamoWindow
@@ -78,6 +80,7 @@ namespace DiagnosticToolkit
 
         public void Shutdown()
         {
+            diagnosticViewModel.SaveData();
         }
 
         public string UniqueId
