@@ -137,22 +137,6 @@
             can save customized data
             </summary>
         </member>
-        <member name="M:CoreNodeModels.DSDropDownBase.XmlEscape(System.String)">
-            <summary>
-            Escape string which could contain XML forbidden chars.
-            </summary>
-            <param name="unescaped"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CoreNodeModels.DSDropDownBase.XmlUnescape(System.String)">
-            <summary>
-            Unescape string which could already be escaped before,
-            if there is no escaped special char, return as it is
-            if there is special char escaped, restore them.
-            </summary>
-            <param name="escaped"></param>
-            <returns></returns>
-        </member>
         <member name="M:CoreNodeModels.DSDropDownBase.GetSelectedStringFromItem(CoreNodeModels.DynamoDropDownItem)">
             <summary>
             This function is to define what dropdown node need to serialize

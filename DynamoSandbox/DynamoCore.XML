@@ -80,11 +80,6 @@
             Indicates the maximum number of files shown in Recent Files
             </summary>
         </member>
-        <member name="F:Dynamo.Configuration.PreferenceSettings.DefaultRenderPrecision">
-            <summary>
-            Indicates the default render precision, i.e. the maximum number of tessellation divisions
-            </summary>
-        </member>
         <member name="F:Dynamo.Configuration.PreferenceSettings.DynamoTestPath">
             <summary>
             Temp PreferenceSetting Location for testing
@@ -169,12 +164,12 @@
             Indicates whether background preview is active or not.
             </summary>
         </member>
-        <member name="P:Dynamo.Configuration.PreferenceSettings.RenderPrecision">
+        <member name="P:Dynamo.Configuration.PreferenceSettings.ShowEdges">
             <summary>
-            Indicate which render precision will be used
+            Indicates whether surface and solid edges will 
+            be rendered.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Dynamo.Configuration.PreferenceSettings.ShowEdges" -->
         <member name="P:Dynamo.Configuration.PreferenceSettings.ShowDetailedLayout">
             <summary>
             Indicates whether show detailed or compact layout during search.
@@ -2034,24 +2029,6 @@
             <param name="xml"></param>
             <returns>A collection of return descriptions from the documentation returns tag.</returns>
         </member>
-        <member name="T:Dynamo.Engine.CodeGeneration.IAstNodeContainer">
-            <summary>
-            Returns notification for AST compilation events.                                                 
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiling(System.Guid)">
-            <summary>
-            Indicates to start compiling a NodeModel to AST nodes.
-            </summary>
-            <param name="nodeGuid"></param>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiled(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
-            <summary>
-            Indicates a NodeModel has been compiled to AST nodes. 
-            </summary>
-            <param name="nodeGuid"></param>
-            <param name="astNodes"></param>
-        </member>
         <member name="M:Dynamo.Engine.CodeGeneration.CompilationEventArgs.#ctor(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode},Dynamo.Engine.CodeGeneration.CompilationContext)">
             <summary>
             Creates CompilationEventArgs
@@ -2112,6 +2089,24 @@
             <summary>
             Notifies post compilation event.
             </summary>
+        </member>
+        <member name="T:Dynamo.Engine.CodeGeneration.IAstNodeContainer">
+            <summary>
+            Returns notification for AST compilation events.                                                 
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiling(System.Guid)">
+            <summary>
+            Indicates to start compiling a NodeModel to AST nodes.
+            </summary>
+            <param name="nodeGuid"></param>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiled(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
+            <summary>
+            Indicates a NodeModel has been compiled to AST nodes. 
+            </summary>
+            <param name="nodeGuid"></param>
+            <param name="astNodes"></param>
         </member>
         <member name="T:Dynamo.Engine.CodeGeneration.CompilingEventArgs">
             <summary>
@@ -6323,12 +6318,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Dynamo.Graph.Workspaces.WorkspaceModel.containsInvalidInputSymbols">
-            <summary>
-            Returns true if the workspace contains input symbols with invalid names.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="E:Dynamo.Graph.Workspaces.WorkspaceModel.MessageLogged">
             <summary>
             Triggers when something needs to be logged
@@ -9568,17 +9557,6 @@
             <param name="name">Background preview name</param>
             <param name="value">Active state to set</param>
         </member>
-        <member name="T:Dynamo.Interfaces.IRenderPrecisionPreference">
-            <summary>
-            Temporary interface to avoid breaking changes.
-            TODO: Merge with IPreferences for 3.0 (DYN-1699)
-            </summary>
-        </member>
-        <member name="P:Dynamo.Interfaces.IRenderPrecisionPreference.RenderPrecision">
-            <summary>
-            Indicate which render precision will be used
-            </summary>
-        </member>
         <member name="T:Dynamo.Interfaces.BackgroundPreviewActiveState">
             <summary>
             Represents data about active state of preview background
@@ -9614,12 +9592,6 @@
                 A tuple of parameter and its type.
             </summary>
         </member>
-        <member name="P:Dynamo.Library.TypedParameter.NameIsValid">
-            <summary>
-            Indicates whether a valid name has been set for this parameter.
-            This property is not serialized.
-            </summary>
-        </member>
         <member name="M:Dynamo.Library.TypedParameter.#ctor(System.String,System.String,System.Int32,System.String,System.String)">
             <summary>
             This function creates TypedParameter
@@ -9639,17 +9611,6 @@
             <param name="defaultValue">parameter default value</param>
             <param name="shortArgumentName">short name is used as tooltip</param>
             <param name="summary">parameter description</param>
-        </member>
-        <member name="M:Dynamo.Library.TypedParameter.#ctor(System.String,ProtoCore.Type,ProtoCore.AST.AssociativeAST.AssociativeNode,System.String,System.String,System.Boolean)">
-            <summary>
-            This function creates TypedParameter
-            </summary>
-            <param name="name">parameter name</param>
-            <param name="type">parameter type</param>
-            <param name="defaultValue">parameter default value</param>
-            <param name="shortArgumentName">short name is used as tooltip</param>
-            <param name="summary">parameter description</param>
-            <param name="nameIsValid">indicates whether the name can be parsed</param>
         </member>
         <member name="P:Dynamo.Library.TypedParameter.Function">
             <summary>
@@ -10503,16 +10464,6 @@
         <member name="F:Dynamo.Models.DynamoModel.MakeConnectionCommand.Mode.Cancel">
             <summary>
             Cancel connection.
-            </summary>
-        </member>
-        <member name="F:Dynamo.Models.DynamoModel.MakeConnectionCommand.Mode.BeginDuplicateConnection">
-            <summary>
-            Begin duplicate connection.
-            </summary>
-        </member>
-        <member name="F:Dynamo.Models.DynamoModel.MakeConnectionCommand.Mode.BeginCreateConnections">
-            <summary>
-            End current connection and create new connections.
             </summary>
         </member>
         <member name="M:Dynamo.Models.DynamoModel.MakeConnectionCommand.#ctor(System.String,System.Int32,Dynamo.Graph.Nodes.PortType,Dynamo.Models.DynamoModel.MakeConnectionCommand.Mode)">
@@ -12945,13 +12896,6 @@
                 Is this CustomNodeDefinition properly loaded?
             </summary>
         </member>
-        <member name="P:Dynamo.CustomNodeDefinition.ContainsInvalidInput">
-            <summary>
-            Indicates whether any of this definition's input parameters are invalid.
-            An input is invalid when its input expression fails to parse. For example, 
-            this would happen if the input name contained spaces or illegal characters.
-            </summary>
-        </member>
         <member name="P:Dynamo.CustomNodeDefinition.FunctionName">
             <summary>
                 Function name.
@@ -14194,39 +14138,6 @@
               Looks up a localized string similar to The folder &apos;{0}&apos; does not exist.
             </summary>
         </member>
-        <member name="P:Dynamo.Properties.Resources.InvalidInputSymbolCustomNodeWarning">
-            <summary>
-              Looks up a localized string similar to This custom node contains an invalid input. Please fix the input before saving the custom node..
-            </summary>
-        </member>
-        <member name="P:Dynamo.Properties.Resources.InvalidInputSymbolErrorMessage">
-             <summary>
-               Looks up a localized string similar to This input symbol is not currently valid, and cannot be saved until it is fixed. Valid inputs take the form:
-            
-            name : type = defaultValue
-            
-            The input name should be a valid variable name, without spaces. An input type and default value are optional..
-             </summary>
-        </member>
-        <member name="P:Dynamo.Properties.Resources.InvalidInputSymbolWarningMessage">
-             <summary>
-               Looks up a localized string similar to This custom node currently contains some invalid inputs, and cannot be saved until the inputs are fixed. If the custom node is saved using SaveAs, the invalid inputs will revert to generic inputs. Valid inputs take the form:
-            
-            name : type = defaultValue
-            
-            The input name should be a valid variable name, without spaces. An input type and default value are optional..
-             </summary>
-        </member>
-        <member name="P:Dynamo.Properties.Resources.InvalidInputSymbolWarningShortMessage">
-            <summary>
-              Looks up a localized string similar to This custom node cannot be saved until invalid inputs are removed or fixed..
-            </summary>
-        </member>
-        <member name="P:Dynamo.Properties.Resources.InvalidInputSymbolWarningTitle">
-            <summary>
-              Looks up a localized string similar to Custom Node Contains Invalid Inputs and Cannot Be Saved..
-            </summary>
-        </member>
         <member name="P:Dynamo.Properties.Resources.InvalidLibraryFormat">
             <summary>
               Looks up a localized string similar to Invalid library format..
@@ -14427,24 +14338,19 @@
               Looks up a localized string similar to Proceed anyway.
             </summary>
         </member>
-        <member name="P:Dynamo.Properties.Resources.PythonTemplateAppData">
-            <summary>
-              Looks up a localized string similar to Python template loaded from AppData.
-            </summary>
-        </member>
         <member name="P:Dynamo.Properties.Resources.PythonTemplateDefaultFile">
             <summary>
-              Looks up a localized string similar to Python template set to default..
+              Looks up a localized string similar to Python template set to default file.
             </summary>
         </member>
-        <member name="P:Dynamo.Properties.Resources.PythonTemplateDefinedByHost">
+        <member name="P:Dynamo.Properties.Resources.PythonTemplateInvalid">
             <summary>
-              Looks up a localized string similar to Python template set by host integrator.
+              Looks up a localized string similar to Python template : no valid template found..
             </summary>
         </member>
         <member name="P:Dynamo.Properties.Resources.PythonTemplateUserFile">
             <summary>
-              Looks up a localized string similar to Python template loaded from DynamoSettings.xml path.
+              Looks up a localized string similar to Python template set to user file.
             </summary>
         </member>
         <member name="P:Dynamo.Properties.Resources.RangeEndCouldNotBeParsed">

@@ -159,6 +159,9 @@
     <Compile Include="src\Utilities\NodeViewCollector.cs" />
     <Compile Include="src\Utilities\NodeViewModifier.cs" />
     <Compile Include="src\Utilities\WindowExtensions.cs" />
+    <Compile Include="src\DiagnosticsSession.cs" />
+    <Compile Include="src\PerformanceData.cs" />
+    <Compile Include="src\PerformanceStatistics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="src\DiagnosticToolkitWindow.xaml">
@@ -184,7 +187,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <DynamoVersion>2.3</DynamoVersion>
+    <DynamoVersion>2.1</DynamoVersion>
     <PackageName>DiagnosticToolkit</PackageName>
     <PackageFolder>$(ProjectDir)dist\$(PackageName)\</PackageFolder>
     <BinFolder>$(PackageFolder)bin\</BinFolder>

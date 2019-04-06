@@ -8,6 +8,9 @@ using Dynamo.Wpf.Extensions;
 using Dynamo.Engine.CodeGeneration;
 using Dynamo.ViewModels;
 using Dynamo.Models;
+using System.IO;
+using Dynamo.Events;
+using Dynamo.Graph.Workspaces;
 
 namespace DiagnosticToolkit
 {
@@ -27,9 +30,11 @@ namespace DiagnosticToolkit
     /// </summary>
     public class DiagnosticToolkitViewExtension : IViewExtension
     {
+        private ViewLoadedParams viewLoadedParams;
         private MenuItem sampleMenuItem;
         private DynamoViewModel vm;
         private DynamoModel model;
+        
 
         public void Dispose()
         {
@@ -37,6 +42,7 @@ namespace DiagnosticToolkit
 
         public void Startup(ViewStartupParams p)
         {
+
         }
 
         public void Loaded(ViewLoadedParams p)
@@ -44,14 +50,14 @@ namespace DiagnosticToolkit
             // Save a reference to your loaded parameters.
             // You'll need these later when you want to use
             // the supplied workspaces
-            model = p.DynamoWindow.DataContext as DynamoModel;
+            viewLoadedParams = p;
+            vm = p.DynamoWindow.DataContext as DynamoViewModel;
+            model = vm.Model;
 
-            AstCompilationEvents.PreCompilation += AstCompilationEvents_PreCompilation;
-
-            sampleMenuItem = new MenuItem { Header = "DT | Diagnostic Tool" };
+            sampleMenuItem = new MenuItem { Header = "DynaNostic" };
             sampleMenuItem.Click += (sender, args) =>
             {
-                var viewModel = new DiagnosticToolkitWindowViewModel(p);
+                var viewModel = new DiagnosticToolkitWindowViewModel(p, model);
                 var window = new DiagnosticToolkitWindow
                 {
                     // Set the data context for the main grid in the window.
@@ -61,18 +67,13 @@ namespace DiagnosticToolkit
                     Owner = p.DynamoWindow
                 };
 
-                //window.Left = window.Owner.Left + 400;
-                //window.Top = window.Owner.Top + 200;
+                window.Left = window.Owner.Left + 400;
+                window.Top = window.Owner.Top + 200;
 
                 // Show a modeless window.
                 window.Show();
             };
             p.AddMenuItem(MenuBarType.View, sampleMenuItem);
-        }
-
-        private void AstCompilationEvents_PreCompilation(object sender, CompilationEventArgs e)
-        {
-            model.Logger.Log("Its worrrrking");
         }
 
         public void Shutdown()
