@@ -8,6 +8,10 @@ using Dynamo.Extensions;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
 using Dynamo.Models;
+using LiveCharts;
+using LiveCharts.Wpf;
+using LiveCharts.Defaults;
+using DiagnosticToolkit.Utilities;
 
 namespace DiagnosticToolkit
 {
@@ -19,6 +23,17 @@ namespace DiagnosticToolkit
         private string statfile;
         private static PerformanceStatistics statistics = new PerformanceStatistics();
         private static WorkspaceModel ws;
+
+        private SeriesCollection nodeViewData { get; set; }
+        public SeriesCollection NodeViewData
+        {
+            get => nodeViewData;
+            set
+            {
+                nodeViewData = value;
+                RaisePropertyChanged("NodeViewData");
+            }
+        }
 
         public static IQueryNodePerformance NodePerformance { get { return statistics; } }
 
@@ -42,6 +57,37 @@ namespace DiagnosticToolkit
 
             homeWorkspaceModel.EvaluationCompleted += Hwm_EvaluationCompleted;
 
+
+            NodeViewData = new SeriesCollection
+            {
+                new ScatterSeries
+                {
+                    Values = new ChartValues<ScatterPoint>
+                    {
+                        new ScatterPoint(5, 5, 20),
+                        new ScatterPoint(3, 4, 80),
+                        new ScatterPoint(7, 2, 20),
+                        new ScatterPoint(2, 6, 60),
+                        new ScatterPoint(8, 2, 70)
+                    },
+                    MinPointShapeDiameter = 15,
+                    MaxPointShapeDiameter = 45
+                },
+                new ScatterSeries
+                {
+                    Values = new ChartValues<ScatterPoint>
+                    {
+                        new ScatterPoint(7, 5, 1),
+                        new ScatterPoint(2, 2, 1),
+                        new ScatterPoint(1, 1, 1),
+                        new ScatterPoint(6, 3, 1),
+                        new ScatterPoint(8, 8, 1)
+                    },
+                    MinPointShapeDiameter = 15,
+                    MaxPointShapeDiameter = 45
+                }
+
+            };
         }
 
         private void Hwm_EvaluationCompleted(object sender, EvaluationCompletedEventArgs e)
