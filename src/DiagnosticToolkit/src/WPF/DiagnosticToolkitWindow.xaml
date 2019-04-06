@@ -25,56 +25,66 @@
     </Controls:MetroWindow.Resources>
     <TabControl  TabStripPlacement="Top" Grid.ColumnSpan="3">
         <TabItem Header=" Current Data ">
-            <StackPanel>
-                <Label Content="TOTAL EXECUTION TIME: " />
-                <Label Content="NODES:" />
-                <Label Content="  Executed: " />
-                <Label Content="  With warnings: " />
-                <Label Content="  With errors: " Margin="0,0,0,20"/>
-                <lvc:CartesianChart Height="250" Margin="10" Series="{Binding NodeViewData}">
-                    <lvc:CartesianChart.AxisX>
-                        <lvc:Axis IsMerged="True">
-                            <lvc:Axis.Separator>
-                                <lvc:Separator StrokeThickness="1">
-                                    <lvc:Separator.Stroke>
-                                        <SolidColorBrush Color="#3f3f3f" />
-                                    </lvc:Separator.Stroke>
-                                </lvc:Separator>
-                            </lvc:Axis.Separator>
-                        </lvc:Axis>
-                    </lvc:CartesianChart.AxisX>
-                    <lvc:CartesianChart.AxisY>
-                        <lvc:Axis IsMerged="True">
-                            <lvc:Axis.Separator>
-                                <lvc:Separator StrokeThickness="1">
-                                    <lvc:Separator.Stroke>
-                                        <SolidColorBrush Color="#3f3f3f" />
-                                    </lvc:Separator.Stroke>
-                                </lvc:Separator>
-                            </lvc:Axis.Separator>
-                        </lvc:Axis>
-                    </lvc:CartesianChart.AxisY>
-                    <lvc:CartesianChart.DataTooltip>
-                        <lvc:DefaultTooltip BulletSize="20" Background="Gray" SelectionMode="OnlySender"/>
-                    </lvc:CartesianChart.DataTooltip>
-                    <lvc:CartesianChart.Resources>
-                        <Style TargetType="lvc:DefaultTooltip">
-                            <Setter Property="Background" Value="DarkOrange"></Setter>
-                            <Setter Property="Foreground" Value="White"></Setter>
-                            <Setter Property="ShowTitle" Value="False"></Setter>
-                            <!--new property-->
-                            <Setter Property="ShowSeries" Value="False"></Setter>
-                            <!--new property-->
-                            <Setter Property="FontSize" Value="12"></Setter>
-                            <Setter Property="FontWeight" Value="Bold"></Setter>
-                            <Setter Property="CornerRadius" Value="20"></Setter>
-                            <Setter Property="Width" Value="80"></Setter>
-                            <Setter Property="Height" Value="40"></Setter>
-                            <Setter Property="BorderThickness" Value="0"></Setter>
-                        </Style>
-                    </lvc:CartesianChart.Resources>
-                </lvc:CartesianChart>
-            </StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Name="Data" Height="1.2*"/>
+                    <RowDefinition Name="Graph" Height="3*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <Label Content="TOTAL EXECUTION TIME: " />
+                    <Label Content="NODES:" />
+                    <Label Content="  Executed: " />
+                    <Label Content="  With warnings: " />
+                    <Label Content="  With errors: " Margin="0,0,0,20"/>
+                </StackPanel>
+
+                    <lvc:CartesianChart Grid.Row="1" 
+                                        Height="250" 
+                                        Margin="10" 
+                                        Series="{Binding NodeViewData}">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis IsMerged="True">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator StrokeThickness="1">
+                                        <lvc:Separator.Stroke>
+                                            <SolidColorBrush Color="#3f3f3f" />
+                                        </lvc:Separator.Stroke>
+                                    </lvc:Separator>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis IsMerged="True">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator StrokeThickness="1">
+                                        <lvc:Separator.Stroke>
+                                            <SolidColorBrush Color="#3f3f3f" />
+                                        </lvc:Separator.Stroke>
+                                    </lvc:Separator>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                        <lvc:CartesianChart.DataTooltip>
+                            <lvc:DefaultTooltip BulletSize="20" Background="Gray" SelectionMode="OnlySender"/>
+                        </lvc:CartesianChart.DataTooltip>
+                        <lvc:CartesianChart.Resources>
+                            <Style TargetType="lvc:DefaultTooltip">
+                                <Setter Property="Background" Value="DarkOrange"></Setter>
+                                <Setter Property="Foreground" Value="White"></Setter>
+                                <Setter Property="ShowTitle" Value="False"></Setter>
+                                <!--new property-->
+                                <Setter Property="ShowSeries" Value="False"></Setter>
+                                <!--new property-->
+                                <Setter Property="FontSize" Value="12"></Setter>
+                                <Setter Property="FontWeight" Value="Bold"></Setter>
+                                <Setter Property="CornerRadius" Value="20"></Setter>
+                                <Setter Property="Width" Value="80"></Setter>
+                                <Setter Property="Height" Value="40"></Setter>
+                                <Setter Property="BorderThickness" Value="0"></Setter>
+                            </Style>
+                        </lvc:CartesianChart.Resources>
+                    </lvc:CartesianChart>
+            </Grid>
         </TabItem>
         <TabItem Header=" Previous Data ">
             <Grid Name="MainGrid" 
@@ -91,7 +101,13 @@
                     <RowDefinition Name="ProgressRow" Height="20"/>
                     <RowDefinition Name="BottomRow" Height="35"/>
                 </Grid.RowDefinitions>
-                <ListBox Grid.Row="1" Grid.ColumnSpan="3" />
+                <Label Content="RECENT DIAGNOSTIC REPORTS" Grid.Row="0" Grid.ColumnSpan="3" FontSize="16" />
+                <ListBox Grid.Row="1" Grid.ColumnSpan="3">
+                    <ListBoxItem Content=" +  Run 01 | 05/04/2019 19:42 "></ListBoxItem>
+                    <ListBoxItem Content=" +  Run 02 | 06/04/2019 09:58 "></ListBoxItem>
+                    <ListBoxItem Content=" +  Run 03 | 06/04/2019 10:04 "></ListBoxItem>
+                    <ListBoxItem Content=" +  Run 04 | 06/04/2019 12:13 "></ListBoxItem>
+                </ListBox>
                 <Controls:MetroProgressBar 
             Grid.Row="2" Grid.ColumnSpan="3"
             Minimum="0"

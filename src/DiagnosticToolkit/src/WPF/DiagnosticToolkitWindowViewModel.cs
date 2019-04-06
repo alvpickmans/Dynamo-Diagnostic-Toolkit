@@ -83,7 +83,6 @@ namespace DiagnosticToolkit
                         new ScatterPoint(6, 3, 1),
                         new ScatterPoint(8, 8, 1)
                     },
-                    PointGeometry = DefaultGeometries.Triangle,
                     MinPointShapeDiameter = 15,
                     MaxPointShapeDiameter = 45
                 }
