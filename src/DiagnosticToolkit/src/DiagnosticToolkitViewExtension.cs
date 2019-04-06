@@ -65,6 +65,9 @@ namespace DiagnosticToolkit
                     // Set the data context for the main grid in the window.
                     MainGrid = { DataContext = diagnosticViewModel },
 
+                    DataContext = diagnosticViewModel,
+
+
                     // Set the owner of the window to the Dynamo window.
                     Owner = p.DynamoWindow
                 };
