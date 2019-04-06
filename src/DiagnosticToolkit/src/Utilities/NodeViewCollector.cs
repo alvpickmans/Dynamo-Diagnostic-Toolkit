@@ -21,6 +21,14 @@ namespace DiagnosticToolkit.Utilities
             dynamoWindow = parameters.DynamoWindow;
             parameters.CurrentWorkspaceModel.NodeAdded += OnNodeAdded;
             parameters.CurrentWorkspaceModel.NodeRemoved += OnNodeRemoved;
+
+            var nodeViews = this.dynamoWindow.FindVisualChildren<NodeView>().ToList();
+            foreach (var nodeView in nodeViews)
+            {
+                NodeModel model = nodeView.ViewModel.NodeModel;
+                this.collector.Add(model.GUID, nodeView);
+                
+            }
         }
 
         #region Private Methods
@@ -41,7 +49,8 @@ namespace DiagnosticToolkit.Utilities
             nodeViews.Reverse();
             foreach (var nodeView in nodeViews)
             {
-                if (nodeView.DataContext is NodeModel model && model.GUID == this.lastGuidAdded)
+                NodeModel model = nodeView.ViewModel.NodeModel;
+                if (model.GUID == this.lastGuidAdded)
                 {
                     this.collector.Add(model.GUID, nodeView);
                     break;
@@ -53,6 +62,11 @@ namespace DiagnosticToolkit.Utilities
         #endregion
 
         #region Public Methods
+
+        public List<NodeView> NodeViews
+        {
+            get => collector.Values.ToList();
+        }
 
         public NodeView Get(Guid guid)
         {

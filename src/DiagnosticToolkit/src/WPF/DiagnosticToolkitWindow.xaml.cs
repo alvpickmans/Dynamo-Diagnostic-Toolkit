@@ -4,6 +4,7 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Defaults;
 using System.Linq;
+using System.Windows.Threading;
 
 namespace DiagnosticToolkit
 {
@@ -19,6 +20,9 @@ namespace DiagnosticToolkit
             
             DataContext = this;
         }
-        //public SeriesCollection SeriesCollection { get; set; }
+        
+
+        
+
     }
 }
