@@ -18,6 +18,8 @@ namespace DiagnosticToolkit
     {
         public string Name { get; set; }
 
+        public Guid GUID { get; set; }
+
         public string NickName { get; set; }
 
         [XmlArray]
@@ -25,6 +27,14 @@ namespace DiagnosticToolkit
 
         public NodeStatistics()
         {
+            Performance = new List<PerformanceData>();
+        }
+
+        public NodeStatistics(string Name, Guid guid, string nickname)
+        {
+            this.Name = Name;
+            this.GUID = guid;
+            this.NickName = nickname;
             Performance = new List<PerformanceData>();
         }
     }
@@ -39,26 +49,26 @@ namespace DiagnosticToolkit
     /// </summary>
     public class PerformanceStatistics : IQueryNodePerformance
     {
-        private Dictionary<string, NodeStatistics> statistics = new Dictionary<string, NodeStatistics>();
+        private Dictionary<Guid, NodeStatistics> statistics = new Dictionary<Guid, NodeStatistics>();
 
         public void AddPerformanceData(NodeModel node, PerformanceData data)
         {
             var name = GetUniqueNodeName(node);
             NodeStatistics stats;
-            if (!statistics.TryGetValue(name, out stats))
+            if (!statistics.TryGetValue(node.GUID, out stats))
             {
-                stats = new NodeStatistics() { Name = name, NickName = node.Name };
+                stats = new NodeStatistics(name, node.GUID, node.Name);
             }
             
             stats.Performance.Add(data);
-            statistics[name] = stats;
+            statistics[node.GUID] = stats;
         }
 
         public IEnumerable<PerformanceData> GetNodePerformance(NodeModel node)
         {
             var name = GetUniqueNodeName(node);
             NodeStatistics stats;
-            if (statistics.TryGetValue(name, out stats))
+            if (statistics.TryGetValue(node.GUID, out stats))
                 return stats.Performance;
 
             return Enumerable.Empty<PerformanceData>();
@@ -95,7 +105,7 @@ namespace DiagnosticToolkit
             {
                 if (value != null)
                 {
-                    statistics = value.ToDictionary(x => x.Name);
+                    statistics = value.ToDictionary(x => x.GUID);
                 }
             }
         }
