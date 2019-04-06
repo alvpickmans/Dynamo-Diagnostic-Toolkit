@@ -14,6 +14,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Dynamo\Dynamo Core\2\DynamoSandbox.exe</StartProgram>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +60,7 @@
     </Reference>
     <Reference Include="DynamoCore">
       <HintPath>..\..\DynamoSandbox\DynamoCore.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DynamoCoreWpf, Version=2.0.2.6986, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamoVisualProgramming.WpfUILibrary.2.0.2.6986\lib\net45\DynamoCoreWpf.dll</HintPath>
@@ -151,27 +154,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\DiagnosticToolkitViewExtension.cs" />
-    <Compile Include="src\DiagnosticToolkitWindowViewModel.cs" />
-    <Compile Include="src\DiagnosticToolkitWindow.xaml.cs">
+    <Compile Include="src\WPF\DiagnosticToolkitWindowViewModel.cs" />
+    <Compile Include="src\WPF\DiagnosticToolkitWindow.xaml.cs">
       <DependentUpon>DiagnosticToolkitWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Utilities\NodeViewCollector.cs" />
     <Compile Include="src\Utilities\NodeViewModifier.cs" />
     <Compile Include="src\Utilities\WindowExtensions.cs" />
-    <Compile Include="src\DiagnosticsSession.cs" />
-    <Compile Include="src\PerformanceData.cs" />
-    <Compile Include="src\PerformanceStatistics.cs" />
+    <Compile Include="src\Diagnostic\DiagnosticsSession.cs" />
+    <Compile Include="src\Diagnostic\PerformanceData.cs" />
+    <Compile Include="src\Diagnostic\PerformanceStatistics.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="src\DiagnosticToolkitWindow.xaml">
+    <Page Include="src\WPF\DiagnosticToolkitWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="dist\" />
-    <Folder Include="src\Controls\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="manifests\pkg.json" />
@@ -199,18 +201,19 @@
       <Dlls Include="$(OutDir)*.dll" />
       <Pdbs Include="$(OutDir)*.pdb" />
       <Xmls Include="$(OutDir)*.xml" />
-      <Xmls Include="$(ProjectDir)manifests\*.xml" />
+      <ViewExtensionDefinition Include="$(ProjectDir)manifests\*ViewExtensionDefinition.xml" />
       <PackageJson Include="$(ProjectDir)manifests\pkg.json" />
     </ItemGroup>
-    <Copy SourceFiles="@(Dlls)" DestinationFolder="$(BinFolder)" />
-    <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(BinFolder)" />
-    <Copy SourceFiles="@(Xmls)" DestinationFolder="$(BinFolder)" />
-    <Copy SourceFiles="@(PackageJson)" DestinationFolder="$(PackageFolder)" />
     <MakeDir Directories="$(ExtraFolder)" Condition="!Exists($(ExtraFolder))">
     </MakeDir>
     <MakeDir Directories="$(DyfFolder)" Condition="!Exists($(DyfFolder))">
     </MakeDir>
     <CallTarget Condition="'$(Configuration)' == 'Debug'" Targets="PackageDeploy" />
+    <Copy SourceFiles="@(Dlls)" DestinationFolder="$(BinFolder)" />
+    <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(BinFolder)" />
+    <Copy SourceFiles="@(Xmls)" DestinationFolder="$(BinFolder)" />
+    <Copy SourceFiles="@(ViewExtensionDefinition)" DestinationFolder="$(ExtraFolder)" />
+    <Copy SourceFiles="@(PackageJson)" DestinationFolder="$(PackageFolder)" />
   </Target>
   <Target Name="PackageDeploy">
     <ItemGroup>
@@ -226,4 +229,5 @@
     <Copy SourceFiles="@(SourcePackage)" Condition="Exists($(DynamoCore))" DestinationFolder="$(DynamoCore)\$(PackageName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(SourcePackage)" Condition="Exists($(DynamoRevit))" DestinationFolder="$(DynamoRevit)\$(PackageName)\%(RecursiveDir)" />
   </Target>
+  
 </Project>
