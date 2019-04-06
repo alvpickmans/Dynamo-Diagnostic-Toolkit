@@ -24,6 +24,7 @@ namespace DiagnosticToolkit
         private static PerformanceStatistics statistics = new PerformanceStatistics();
         private static WorkspaceModel ws;
 
+        #region UI Properties
         private SeriesCollection nodeViewData { get; set; }
         public SeriesCollection NodeViewData
         {
@@ -33,7 +34,30 @@ namespace DiagnosticToolkit
                 nodeViewData = value;
                 RaisePropertyChanged("NodeViewData");
             }
+        } 
+
+        private int _executionTime { get; set; }
+        public int ExecutionTime
+        {
+            get => _executionTime;
+            set
+            {
+                _executionTime = value;
+                RaisePropertyChanged("ExecutionTime");
+            }
         }
+
+        private int _executedNodes { get; set; }
+        public int ExecutedNodes
+        {
+            get => _executedNodes;
+            set
+            {
+                _executedNodes = value;
+                RaisePropertyChanged("ExecutedNodes");
+            }
+        }
+        #endregion
 
         public static IQueryNodePerformance NodePerformance { get { return statistics; } }
 
@@ -57,6 +81,7 @@ namespace DiagnosticToolkit
 
             homeWorkspaceModel.EvaluationCompleted += Hwm_EvaluationCompleted;
 
+            session.SessionExecuted += Session_SessionExecuted;
 
             NodeViewData = new SeriesCollection
             {
@@ -89,6 +114,15 @@ namespace DiagnosticToolkit
                 }
 
             };
+        }
+
+        private void Session_SessionExecuted(object sender, EventArgs e)
+        {
+            DiagnosticsSession session = sender as DiagnosticsSession;
+
+            this.ExecutionTime = session.ExecutionTime;
+            this.ExecutedNodes = session.EvaluatedNodes.Count;
+
         }
 
         private void Hwm_EvaluationCompleted(object sender, EvaluationCompletedEventArgs e)

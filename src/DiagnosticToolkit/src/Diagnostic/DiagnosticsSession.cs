@@ -111,6 +111,8 @@ namespace DiagnosticToolkit
                 }
             }
             RaisePropertyChanged("EvaluatedNodes");
+
+            OnSessionExecuted(null);
         }
 
         void OnPreCompilation(object sender, CompilationEventArgs e)
@@ -170,5 +172,20 @@ namespace DiagnosticToolkit
         internal static int TotalExecutionTime { get; private set; }
 
         internal static int MaxExecutionTime { get; private set; }
+
+        #region events
+
+        protected virtual void OnSessionExecuted(EventArgs e)
+        {
+            EventHandler handler = SessionExecuted;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public event EventHandler SessionExecuted;
+
+        #endregion
     }
 }

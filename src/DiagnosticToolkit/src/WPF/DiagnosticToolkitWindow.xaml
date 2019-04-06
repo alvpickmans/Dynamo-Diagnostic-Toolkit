@@ -26,11 +26,17 @@
     <TabControl  TabStripPlacement="Top" Grid.ColumnSpan="3">
         <TabItem Header=" Current Data ">
             <StackPanel>
-                <Label Content="TOTAL EXECUTION TIME: " />
+                <DockPanel>
+                    <Label Content="TOTAL EXECUTION TIME: " />
+                    <Label Content="{Binding ExecutionTime}" />
+                </DockPanel>
                 <Label Content="NODES:" />
-                <Label Content="  Executed: " />
-                <Label Content="  With warnings: " />
-                <Label Content="  With errors: " Margin="0,0,0,20"/>
+                <DockPanel>
+                    <Label Content="  Executed: " />
+                    <Label Content="{Binding ExecutedNodes}" />
+                </DockPanel>
+                <!--<Label Content="  With warnings: " />
+                <Label Content="  With errors: " Margin="0,0,0,20"/>-->
                 <lvc:CartesianChart Height="250" Margin="10" Series="{Binding NodeViewData}">
                     <lvc:CartesianChart.AxisX>
                         <lvc:Axis IsMerged="True">
