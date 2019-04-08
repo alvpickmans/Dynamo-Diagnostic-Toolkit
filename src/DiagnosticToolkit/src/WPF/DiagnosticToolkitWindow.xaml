@@ -97,7 +97,15 @@
                     <RowDefinition Name="ProgressRow" Height="20"/>
                     <RowDefinition Name="BottomRow" Height="35"/>
                 </Grid.RowDefinitions>
-                <ListBox Grid.Row="1" Grid.ColumnSpan="3" />
+                <ListBox Grid.Row="1" Grid.ColumnSpan="3" >
+                    <Label Content="RECENT DIAGNOSTIC REPORTS" Grid.Row="0" Grid.ColumnSpan="3" FontSize="16" />
+                    <ListBox Grid.Row="1" Grid.ColumnSpan="3">
+                        <ListBoxItem Content=" +  Run 01 | 05/04/2019 19:42 "></ListBoxItem>
+                        <ListBoxItem Content=" +  Run 02 | 06/04/2019 09:58 "></ListBoxItem>
+                        <ListBoxItem Content=" +  Run 03 | 06/04/2019 10:04 "></ListBoxItem>
+                        <ListBoxItem Content=" +  Run 04 | 06/04/2019 12:13 "></ListBoxItem>
+                    </ListBox>
+                </ListBox>
                 <Controls:MetroProgressBar 
             Grid.Row="2" Grid.ColumnSpan="3"
             Minimum="0"
