@@ -12,6 +12,10 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Defaults;
 using DiagnosticToolkit.Utilities;
+using Dynamo.Wpf.Extensions;
+using System.Windows;
+using System.Collections.Generic;
+using System.Windows.Threading;
 
 namespace DiagnosticToolkit
 {
@@ -24,6 +28,10 @@ namespace DiagnosticToolkit
         private static PerformanceStatistics statistics = new PerformanceStatistics();
         private static WorkspaceModel ws;
 
+        private NodeViewCollector nodeViewCollector;
+        private Window _diagnosticWindow;
+
+        #region UI Properties
         private SeriesCollection nodeViewData { get; set; }
         public SeriesCollection NodeViewData
         {
@@ -33,7 +41,30 @@ namespace DiagnosticToolkit
                 nodeViewData = value;
                 RaisePropertyChanged("NodeViewData");
             }
+        } 
+
+        private int _executionTime { get; set; }
+        public int ExecutionTime
+        {
+            get => _executionTime;
+            set
+            {
+                _executionTime = value;
+                RaisePropertyChanged("ExecutionTime");
+            }
         }
+
+        private int _executedNodes { get; set; }
+        public int ExecutedNodes
+        {
+            get => _executedNodes;
+            set
+            {
+                _executedNodes = value;
+                RaisePropertyChanged("ExecutedNodes");
+            }
+        }
+        #endregion
 
         public static IQueryNodePerformance NodePerformance { get { return statistics; } }
 
@@ -42,12 +73,12 @@ namespace DiagnosticToolkit
             statistics.Save(statfile);
         }
 
-        public DiagnosticToolkitWindowViewModel(ReadyParams p, DynamoModel model)
+        public DiagnosticToolkitWindowViewModel(ViewLoadedParams p, DynamoModel model)
         {
             readyParams = p;
             dynamoModel = model;
             HomeWorkspaceModel homeWorkspaceModel = p.CurrentWorkspaceModel as HomeWorkspaceModel;
-
+            
             //Creates statistic XML files, if file exsists load that.
             statfile = Path.Combine(model.PathManager.UserDataDirectory, "Statistics.json");
             if (File.Exists(statfile))
@@ -57,37 +88,66 @@ namespace DiagnosticToolkit
 
             homeWorkspaceModel.EvaluationCompleted += Hwm_EvaluationCompleted;
 
+            session.SessionExecuted += Session_SessionExecuted;
 
-            NodeViewData = new SeriesCollection
-            {
-                new ScatterSeries
-                {
-                    Values = new ChartValues<ScatterPoint>
-                    {
-                        new ScatterPoint(5, 5, 20),
-                        new ScatterPoint(3, 4, 80),
-                        new ScatterPoint(7, 2, 20),
-                        new ScatterPoint(2, 6, 60),
-                        new ScatterPoint(8, 2, 70)
-                    },
-                    MinPointShapeDiameter = 15,
-                    MaxPointShapeDiameter = 45
-                },
-                new ScatterSeries
-                {
-                    Values = new ChartValues<ScatterPoint>
-                    {
-                        new ScatterPoint(7, 5, 1),
-                        new ScatterPoint(2, 2, 1),
-                        new ScatterPoint(1, 1, 1),
-                        new ScatterPoint(6, 3, 1),
-                        new ScatterPoint(8, 8, 1)
-                    },
-                    MinPointShapeDiameter = 15,
-                    MaxPointShapeDiameter = 45
-                }
+            this.nodeViewCollector = new NodeViewCollector(p);
 
-            };
+            NodeViewData = new SeriesCollection();
+        }
+
+        public void AssignWindow(Window window)
+        {
+            _diagnosticWindow = window;
+        }
+
+        private void UpdateNodeViewData (DiagnosticsSession session)
+        {
+            _diagnosticWindow.Dispatcher.Invoke(() => {
+
+                int minDiameter = session.EvaluatedNodes.Min(nd => nd.ExecutionTime);
+                int maxDiameter = session.EvaluatedNodes.Max(nd => nd.ExecutionTime);
+                int minimum = 10;
+                int maximum = 50;
+
+                List<ScatterPoint> points = nodeViewCollector.NodeViews.Select(nv =>
+                {
+                    Point location = nv.GetLocation();
+                    NodeData nodeData = session.EvaluatedNodes.FirstOrDefault(nd => nd.Node.GUID == nv.ViewModel.NodeModel.GUID);
+                    var time = nodeData == null ? 0 : nodeData.ExecutionTime;
+                    var diameter = time.Map(minDiameter, maxDiameter, minimum, maximum);
+
+                    nv.AddTime(time);
+
+                    ScatterPoint p = new ScatterPoint(location.X, -location.Y, diameter);
+
+                    return p;
+                }).ToList();
+
+                this.NodeViewData = new SeriesCollection
+                {
+                    new ScatterSeries
+                    {
+                        Values = new ChartValues<ScatterPoint>(points),
+                        MinPointShapeDiameter = minimum,
+                        MaxPointShapeDiameter = maximum
+                    }
+
+                };
+            });
+        }
+
+        private void Session_SessionExecuted(object sender, EventArgs e)
+        {
+            DiagnosticsSession session = sender as DiagnosticsSession;
+
+            this.ExecutionTime = session.ExecutionTime;
+            this.ExecutedNodes = session.EvaluatedNodes.Count;
+
+            
+
+
+            this.UpdateNodeViewData(session);
+
         }
 
         private void Hwm_EvaluationCompleted(object sender, EvaluationCompletedEventArgs e)

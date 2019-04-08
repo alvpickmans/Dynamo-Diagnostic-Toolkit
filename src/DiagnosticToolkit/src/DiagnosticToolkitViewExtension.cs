@@ -72,6 +72,8 @@ namespace DiagnosticToolkit
                     Owner = p.DynamoWindow
                 };
 
+                diagnosticViewModel.AssignWindow(window);
+
                 window.Left = window.Owner.Left + 400;
                 window.Top = window.Owner.Top + 200;
 
