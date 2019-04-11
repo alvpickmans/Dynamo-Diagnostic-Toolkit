@@ -1700,6 +1700,21 @@
             <returns><cref name="CompactBubbleViewModel"/> instance 
             if <paramref name="generateViewModel"/> is specified. Otherwise, null</returns>
         </member>
+        <member name="M:Dynamo.Wpf.Utilities.CrashUtilities.GitHubCrashReportBody(System.Object)">
+            <summary>
+            Formats crash details and adds metadata for use in Github issue body
+            </summary>
+            <param name="details">Crash details, such as a stack trace.</param>
+            <returns>A formatted, but not escaped, string to use as issue body.</returns>
+        </member>
+        <member name="M:Dynamo.Wpf.Utilities.CrashUtilities.BuildMarkdownContent(System.String,System.String)">
+            <summary>
+            Builds a Markdown string that will be posted to our new GitHub issue
+            </summary>
+            <param name="dynamoVersion">Dynamo version that should be recorded in the issue report</param>
+            <param name="stackTrace">The crash stack trace to be included in the issue report</param>
+            <returns></returns>
+        </member>
         <member name="F:Dynamo.Wpf.Utilities.LibraryDragAndDrop.startPosition">
             <summary>
             Position of mouse, when user clicks on button.
@@ -2305,6 +2320,11 @@
         <member name="P:Dynamo.Wpf.Properties.Resources.CrashPromptDialogTitle">
             <summary>
               Looks up a localized string similar to {0} has crashed.
+            </summary>
+        </member>
+        <member name="P:Dynamo.Wpf.Properties.Resources.CrashPromptGithubNewIssueTitle">
+            <summary>
+              Looks up a localized string similar to Crash report from Dynamo {0}.
             </summary>
         </member>
         <member name="P:Dynamo.Wpf.Properties.Resources.CreateMember">
@@ -3564,7 +3584,7 @@
         </member>
         <member name="P:Dynamo.Wpf.Properties.Resources.MessageConfirmToSaveReadOnlyCustomNode">
             <summary>
-              Looks up a localized string similar to We can&apos;t save &quot;{0}&quot; because the file is read-only or contains unresolved XML nodes. To keep changes, would you like to &quot;Save As...&quot; with a different name or path?.
+              Looks up a localized string similar to We can&apos;t save &quot;{0}&quot; because the file is read-only or contains unresolved or invalid nodes. To keep changes, would you like to &quot;Save As...&quot; with a different name or path?.
             </summary>
         </member>
         <member name="P:Dynamo.Wpf.Properties.Resources.MessageConfirmToUninstallPackage">
@@ -6246,6 +6266,13 @@
             <param name="watch3DViewModel"></param>
             <param name="factory"></param>
         </member>
+        <member name="M:Dynamo.ViewModels.DynamoViewModel.ReportABug(System.Object)">
+            <summary>
+            Opens a new browser window pointing to the Dynamo repo new issue page, pre-filling issue 
+            title and content based on crash details. Uses system default browser.
+            </summary>
+            <param name="bodyContent">Crash details body. If null, nothing will be filled-in.</param>
+        </member>
         <member name="M:Dynamo.ViewModels.DynamoViewModel.ClearLog(System.Object)">
             <summary>
             Clear the UI log.
@@ -7840,36 +7867,6 @@
         <member name="M:DynamoCore.UI.Controls.GraphUpdateNotificationControl.InitializeComponent">
             <summary>
             InitializeComponent
-            </summary>
-        </member>
-        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
-            <summary>
-            GeneratedInternalTypeHelper
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
-            <summary>
-            CreateInstance
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            GetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            SetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
-            <summary>
-            CreateDelegate
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
-            <summary>
-            AddEventHandler
             </summary>
         </member>
     </members>

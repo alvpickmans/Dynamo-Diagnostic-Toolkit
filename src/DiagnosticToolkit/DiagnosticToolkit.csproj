@@ -172,9 +172,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="dist\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="manifests\pkg.json" />
     <None Include="manifests\DiagnosticToolkit_ViewExtensionDefinition.xml" />
@@ -189,7 +187,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <DynamoVersion>2.1</DynamoVersion>
+    <DynamoVersion>2.3</DynamoVersion>
     <PackageName>DiagnosticToolkit</PackageName>
     <PackageFolder>$(ProjectDir)dist\$(PackageName)\</PackageFolder>
     <BinFolder>$(PackageFolder)bin\</BinFolder>
