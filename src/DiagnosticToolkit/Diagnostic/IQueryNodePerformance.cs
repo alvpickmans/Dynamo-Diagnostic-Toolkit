@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dynamo.Graph.Nodes;
 
 namespace DiagnosticToolkit
 {
-    public struct PerformanceData
+    public interface IQueryNodePerformance
     {
-        public int ExecutionTime;
-        public int InputSize;
-        public int OutputSize;
+        IEnumerable<PerformanceData> GetNodePerformance(NodeModel node);
     }
 }

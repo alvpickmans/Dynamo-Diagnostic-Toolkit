@@ -13,36 +13,6 @@ using Newtonsoft.Json;
 namespace DiagnosticToolkit
 {
     /// <summary>
-    /// Stores a node's performance statistics
-    /// </summary>
-    public class NodeStatistics
-    {
-        public string Name { get; set; }
-
-        public Guid GUID { get; set; }
-
-        public string NickName { get; set; }
-
-        public List<PerformanceData> Performance = new List<PerformanceData>();
-
-        public NodeStatistics()
-        {
-        }
-
-        public NodeStatistics(string Name, Guid guid, string nickname)
-        {
-            this.Name = Name;
-            this.GUID = guid;
-            this.NickName = nickname;
-        }
-    }
-
-    public interface IQueryNodePerformance
-    {
-        IEnumerable<PerformanceData> GetNodePerformance(NodeModel node);
-    }
-
-    /// <summary>
     /// Stores performance statistics of all nodes.
     /// </summary>
     public class PerformanceStatistics : IQueryNodePerformance

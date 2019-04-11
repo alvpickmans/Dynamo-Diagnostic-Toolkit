@@ -154,6 +154,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiagnosticToolkitViewExtension.cs" />
+    <Compile Include="Diagnostic\IQueryNodePerformance.cs" />
+    <Compile Include="Diagnostic\NodeStatistics.cs" />
+    <Compile Include="Diagnostic\PerformanceData.cs" />
     <Compile Include="WPF\DiagnosticToolkitWindowViewModel.cs" />
     <Compile Include="WPF\DiagnosticToolkitWindow.xaml.cs">
       <DependentUpon>DiagnosticToolkitWindow.xaml</DependentUpon>
@@ -163,7 +166,7 @@
     <Compile Include="Utilities\NodeViewModifier.cs" />
     <Compile Include="Utilities\WindowExtensions.cs" />
     <Compile Include="Diagnostic\DiagnosticsSession.cs" />
-    <Compile Include="Diagnostic\PerformanceData.cs" />
+    <Compile Include="Diagnostic\NodeData.cs" />
     <Compile Include="Diagnostic\PerformanceStatistics.cs" />
   </ItemGroup>
   <ItemGroup>

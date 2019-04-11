@@ -143,9 +143,6 @@ namespace DiagnosticToolkit
             this.ExecutionTime = session.ExecutionTime;
             this.ExecutedNodes = session.EvaluatedNodes.Count;
 
-            
-
-
             this.UpdateNodeViewData(session);
 
         }
