@@ -133,7 +133,7 @@ namespace DiagnosticToolkit
                     var time = nodeData == null ? 0 : nodeData.ExecutionTime;
                     var diameter = time.Map(minDiameter, maxDiameter, minimum, maximum);
 
-                    nv.AddTime(time);
+                    //nv.AddTime(time);
 
                     ScatterPoint p = new ScatterPoint(location.X, -location.Y, diameter);
 
