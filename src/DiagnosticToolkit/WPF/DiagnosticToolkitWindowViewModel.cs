@@ -16,20 +16,21 @@ using Dynamo.Wpf.Extensions;
 using System.Windows;
 using System.Collections.Generic;
 using System.Windows.Threading;
+using Dynamo.ViewModels;
 
 namespace DiagnosticToolkit
 {
     public class DiagnosticToolkitWindowViewModel : NotificationObject, IDisposable
     {
-        private ReadyParams readyParams;
-        private DynamoModel dynamoModel;
+        private readonly ViewLoadedParams viewParameters;
+        private readonly DynamoViewModel dynamoViewModel;
+        private readonly DynamoModel dynamoModel;
         private DiagnosticsSession session;
         private string statfile;
         private static PerformanceStatistics statistics = new PerformanceStatistics();
-        private static WorkspaceModel ws;
 
         private NodeViewCollector nodeViewCollector;
-        private Window _diagnosticWindow;
+        private Window diagnosticWindow;
 
         #region UI Properties
         private SeriesCollection nodeViewData { get; set; }
@@ -73,40 +74,56 @@ namespace DiagnosticToolkit
             statistics.Save(statfile);
         }
 
-        public DiagnosticToolkitWindowViewModel(ViewLoadedParams p, DynamoModel model)
+        public DiagnosticToolkitWindowViewModel(ViewLoadedParams parameters)
         {
-            readyParams = p;
-            dynamoModel = model;
-            HomeWorkspaceModel homeWorkspaceModel = p.CurrentWorkspaceModel as HomeWorkspaceModel;
+            this.viewParameters = parameters;
+            this.nodeViewCollector = new NodeViewCollector(parameters);
+            this.dynamoViewModel = this.viewParameters.DynamoWindow.DataContext as DynamoViewModel;
+            this.dynamoModel = this.dynamoViewModel.Model;
             
-            //Creates statistic XML files, if file exsists load that.
-            statfile = Path.Combine(model.PathManager.UserDataDirectory, "Statistics.json");
+            
+            //Creates statistic json file, if file exsists load that.
+            statfile = Path.Combine(this.dynamoModel.PathManager.UserDataDirectory, "Statistics.json");
             if (File.Exists(statfile))
+            {
                 statistics = PerformanceStatistics.Load(statfile);
-            ws = readyParams.WorkspaceModels.OfType<HomeWorkspaceModel>().First();
-            SetupDiagnosticsSession(ws);
+            }
 
-            homeWorkspaceModel.EvaluationCompleted += Hwm_EvaluationCompleted;
-
-            session.SessionExecuted += Session_SessionExecuted;
-
-            this.nodeViewCollector = new NodeViewCollector(p);
-
+            SetupSession(viewParameters.CurrentWorkspaceModel);
             NodeViewData = new SeriesCollection();
+
+            RegisterEvents();
+        }
+
+        private void RegisterEvents()
+        {
+            this.dynamoModel.WorkspaceAdded += OnWorkspaceChanged;
+            this.session.SessionExecuted += OnSessionExecuted;
+        }
+
+        private void UnregisterEvents()
+        {
+            this.dynamoModel.WorkspaceAdded -= OnWorkspaceChanged;
+            this.session.SessionExecuted -= OnSessionExecuted;
+        }
+
+        private void OnWorkspaceChanged(WorkspaceModel model)
+        {
+            this.SetupSession(model);
         }
 
         public void AssignWindow(Window window)
         {
-            _diagnosticWindow = window;
+            diagnosticWindow = window;
         }
 
         private void UpdateNodeViewData (DiagnosticsSession session)
         {
-            _diagnosticWindow.Dispatcher.Invoke(() => {
+            diagnosticWindow.Dispatcher.Invoke(() => {
 
                 int minDiameter = session.EvaluatedNodes.Min(nd => nd.ExecutionTime);
                 int maxDiameter = session.EvaluatedNodes.Max(nd => nd.ExecutionTime);
-                int minimum = 10;
+                int minimum = 5;
                 int maximum = 50;
 
                 List<ScatterPoint> points = nodeViewCollector.NodeViews.Select(nv =>
@@ -136,7 +153,7 @@ namespace DiagnosticToolkit
             });
         }
 
-        private void Session_SessionExecuted(object sender, EventArgs e)
+        private void OnSessionExecuted(object sender, EventArgs e)
         {
             DiagnosticsSession session = sender as DiagnosticsSession;
 
@@ -147,13 +164,7 @@ namespace DiagnosticToolkit
 
         }
 
-        private void Hwm_EvaluationCompleted(object sender, EvaluationCompletedEventArgs e)
-        {
-            DiagnosticsSession test = session;
-            PerformanceStatistics statTest = statistics;
-        }
-
-        private void SetupDiagnosticsSession(IWorkspaceModel model)
+        private void SetupSession(IWorkspaceModel model)
         {
             if (session != null)
             {
@@ -170,7 +181,7 @@ namespace DiagnosticToolkit
 
         public void Dispose()
         {
-
+            UnregisterEvents();
         }
     }
 }

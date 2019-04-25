@@ -19,10 +19,8 @@ namespace DiagnosticToolkit
     /// </summary>
     public class DiagnosticToolkitViewExtension : IViewExtension
     {
-        private ViewLoadedParams viewLoadedParams;
-        private MenuItem sampleMenuItem;
+        private MenuItem toolkitMenuItem;
         private DynamoViewModel vm;
-        private DynamoModel model;
 
         DiagnosticToolkitWindowViewModel diagnosticViewModel { get; set; }
 
@@ -36,24 +34,21 @@ namespace DiagnosticToolkit
 
         }
 
-        public void Loaded(ViewLoadedParams p)
+        public void Loaded(ViewLoadedParams parameters)
         {
             // Save a reference to your loaded parameters.
             // You'll need these later when you want to use
             // the supplied workspaces
-            viewLoadedParams = p;
-            vm = p.DynamoWindow.DataContext as DynamoViewModel;
-            model = vm.Model;
+            vm = parameters.DynamoWindow.DataContext as DynamoViewModel;
 
-            sampleMenuItem = new MenuItem { Header = "DynaNostic" };
-            sampleMenuItem.Click += (sender, args) =>
+            toolkitMenuItem = new MenuItem { Header = "Diagnostic Toolkit" };
+            toolkitMenuItem.Click += (sender, args) =>
             {
-                diagnosticViewModel = new DiagnosticToolkitWindowViewModel(p, model);
+                diagnosticViewModel = new DiagnosticToolkitWindowViewModel(parameters);
                 var window = new DiagnosticToolkitWindow
                 {
                     DataContext = diagnosticViewModel,
-                    // Set the owner of the window to the Dynamo window.
-                    Owner = p.DynamoWindow
+                    Owner = parameters.DynamoWindow
                 };
 
                 diagnosticViewModel.AssignWindow(window);
@@ -64,7 +59,9 @@ namespace DiagnosticToolkit
                 // Show a modeless window.
                 window.Show();
             };
-            p.AddMenuItem(MenuBarType.View, sampleMenuItem);
+
+            parameters.AddSeparator(MenuBarType.View, new Separator());
+            parameters.AddMenuItem(MenuBarType.View, toolkitMenuItem);
         }
 
         public void Shutdown()

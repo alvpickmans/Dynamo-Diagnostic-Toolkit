@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dynamo.Graph.Nodes;
 using System.Windows;
+using Dynamo.ViewModels;
 
 namespace DiagnosticToolkit.Utilities
 {
@@ -22,16 +23,38 @@ namespace DiagnosticToolkit.Utilities
             parameters.CurrentWorkspaceModel.NodeAdded += OnNodeAdded;
             parameters.CurrentWorkspaceModel.NodeRemoved += OnNodeRemoved;
 
+            //parameters.CurrentWorkspaceChanged += OnCurrentWorkspaceChanged;
+            (parameters.DynamoWindow.DataContext as DynamoViewModel).Model.WorkspaceAdded += OnCurrentWorkspaceChanged;
+
+            this.GetAllOnCurrentWindow();
+        }
+
+        private void OnCurrentWorkspaceChanged(Dynamo.Graph.Workspaces.IWorkspaceModel workspaceModel)
+        {
+            workspaceModel.NodeAdded += OnNodeAdded;
+            workspaceModel.NodeRemoved += OnNodeRemoved;
+
+            this.ResetCollector();
+            this.GetAllOnCurrentWindow();
+        }
+
+        #region Private Methods
+        private void GetAllOnCurrentWindow()
+        {
             var nodeViews = this.dynamoWindow.FindVisualChildren<NodeView>().ToList();
             foreach (var nodeView in nodeViews)
             {
                 NodeModel model = nodeView.ViewModel.NodeModel;
                 this.collector.Add(model.GUID, nodeView);
-                
+
             }
         }
 
-        #region Private Methods
+        private void ResetCollector()
+        {
+            this.collector = new Dictionary<Guid, NodeView>();
+        }
+
         private void OnNodeRemoved(NodeModel nodeModel)
         {
             this.collector.Remove(nodeModel.GUID);
