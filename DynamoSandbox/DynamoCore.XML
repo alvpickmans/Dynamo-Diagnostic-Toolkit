@@ -1217,6 +1217,210 @@
             <param name="isTestMode"></param>
             <param name="args"></param>
         </member>
+        <member name="T:Dynamo.Engine.CodeGeneration.CompilationContext">
+            <summary>
+            The context of AST compilation
+            </summary>
+        </member>
+        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.None">
+            <summary>
+            No specific context.
+            </summary>
+        </member>
+        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.DeltaExecution">
+            <summary>
+            Compiled AST nodes finally will be executed.
+            </summary>
+        </member>
+        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.NodeToCode">
+            <summary>
+            Compiled AST nodes used in node to code.
+            </summary>
+        </member>
+        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.PreviewGraph">
+            <summary>
+            Compiled AST nodes used in previwing graph.
+            </summary>
+        </member>
+        <member name="T:Dynamo.Engine.CodeGeneration.CompiledEventArgs">
+            <summary>
+            This event is triggered when a NodeModel has been compiled to a list of
+            AST nodes.
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.CompiledEventArgs.#ctor(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
+            <summary>
+            Construct ASTBuiltEventArgs with NodeModel and AST nodes.
+            </summary>
+            <param name="node"></param>
+            <param name="astNodes"></param>
+        </member>
+        <member name="P:Dynamo.Engine.CodeGeneration.CompiledEventArgs.Node">
+            <summary>
+            Guid of node that has been built to AST nodes.
+            </summary>
+        </member>
+        <member name="P:Dynamo.Engine.CodeGeneration.CompiledEventArgs.AstNodes">
+            <summary>
+            Built AST nodes.
+            </summary>
+        </member>
+        <member name="T:Dynamo.Engine.CodeGeneration.CompilingEventArgs">
+            <summary>
+            This event is triggerred when compiling a NodeModel to AST nodes.
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.CompilingEventArgs.#ctor(System.Guid)">
+            Construct ASTBuildingEventArgs with NodeModel.
+        </member>
+        <member name="P:Dynamo.Engine.CodeGeneration.CompilingEventArgs.Node">
+            <summary>
+            Guid of NodeModel that is being compiled to AST.
+            </summary>
+        </member>
+        <member name="T:Dynamo.Engine.CodeGeneration.IAstNodeContainer">
+            <summary>
+            Returns notification for AST compilation events.                                                 
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiling(System.Guid)">
+            <summary>
+            Indicates to start compiling a NodeModel to AST nodes.
+            </summary>
+            <param name="nodeGuid"></param>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiled(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
+            <summary>
+            Indicates a NodeModel has been compiled to AST nodes. 
+            </summary>
+            <param name="nodeGuid"></param>
+            <param name="astNodes"></param>
+        </member>
+        <member name="T:Dynamo.Engine.CodeGeneration.AstBuilder">
+            <summary>
+            AstBuilder is a factory class to create different kinds of AST nodes.
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.#ctor(Dynamo.Engine.CodeGeneration.IAstNodeContainer,Dynamo.Engine.Profiling.ProfilingSession)">
+            <summary>
+            Construct a AstBuilder with AST node contiainer.
+            </summary>
+            <param name="nodeContainer"></param>
+            <param name="profilingSession"></param>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.TopologicalSort(System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel})">
+            <summary>
+                Sort nodes in topological order.
+            </summary>
+            <param name="nodes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.BfsTraverse(Dynamo.Graph.Nodes.NodeModel,System.Collections.Generic.Dictionary{Dynamo.Graph.Nodes.NodeModel,Dynamo.Engine.CodeGeneration.AstBuilder.MarkFlag},System.Collections.Generic.Queue{Dynamo.Graph.Nodes.NodeModel})">
+            <summary>
+            Starts from the input node as root, do breadth-first and post-order
+            traversal of the graph (inputs nodes as children nodes). Breadth-first
+            traversal ensures all inputs nodes are visited in their input order 
+            and post-order traversal ensures all upstream nodes are visited 
+            firstly. 
+            </summary>
+            <param name="node">Root node</param>
+            <param name="nodeFlags">Dictionary to record if a node has been visited or not</param>
+            <param name="sortedNodes">Record all visited nodes</param>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.TopologicalSortForGraph(System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel})">
+             <summary>
+             Topological sort *the whole graph*. If the input nodes are part of a
+             graph, it does not promise to generate a good topological order. For 
+             example, for the following graph:
+             
+                     +---+
+                     | A | -----+
+                     +---+      +----> +---+
+                                       | C |
+                                +----> +---+
+                     +---+      |
+                     | B | -----+
+                     +---+
+             
+             Their ideal topological order is A -> B -> C. If the input is only {A, B}, 
+             it may return {B, A} which is not OK in node to code.
+            
+             Note it is much slower than TopologicalSort().
+             </summary>
+             <param name="nodes"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.CompileToAstNodes(System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel},Dynamo.Engine.CodeGeneration.CompilationContext,System.Boolean)">
+            <summary>
+            Compile a collection of NodeModel to AST nodes in different contexts.
+            If the context is ForNodeToCode, nodes should already be sorted in 
+            topological order.
+            </summary>
+            <param name="nodes"></param>
+            <param name="context"></param>
+            <param name="verboseLogging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.CompileCustomNodeDefinition(System.Guid,System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel},System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode},System.Collections.Generic.IEnumerable{Dynamo.Library.TypedParameter},System.Boolean)">
+            <summary>
+                Compiles a collection of Dynamo nodes into a function definition for a custom node.
+            </summary>
+            <param name="functionId"></param>
+            <param name="returnKeys"></param>
+            <param name="functionName"></param>
+            <param name="funcBody"></param>
+            <param name="outputNodes"></param>
+            <param name="parameters"></param>
+            <param name="verboseLogging"></param>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.OnAstNodeBuilding(System.Guid)">
+            <summary>
+                Notify IAstNodeContainer that starts building AST nodes.
+            </summary>
+            <param name="nodeGuid"></param>
+        </member>
+        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.OnAstNodeBuilt(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
+            <summary>
+                Notify IAstNodeContainer that AST nodes have been built.
+            </summary>
+            <param name="nodeGuid"></param>
+            <param name="astNodes"></param>
+        </member>
+        <member name="T:Dynamo.Engine.Profiling.IProfilingExecutionTimeData">
+            <summary>
+            Returns information about time spent compiling and exectuing nodes.                                                 
+            </summary>
+        </member>
+        <member name="P:Dynamo.Engine.Profiling.IProfilingExecutionTimeData.TotalExecutionTime">
+            <summary>
+            Returns the total amount of time spent compiling and executing nodes.
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.Profiling.IProfilingExecutionTimeData.NodeExecutionTime(Dynamo.Graph.Nodes.NodeModel)">
+            <summary>
+            Returns the amount of time spent compiling and executing a specific node.
+            </summary>
+        </member>
+        <member name="T:Dynamo.Engine.Profiling.ProfilingSession">
+            <summary>
+            This class manages a diagnostic session and the data collected in a session.
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.Profiling.ProfilingSession.#ctor">
+            <summary>
+            Creeate a diagnostic session for collecting profiling data.
+            </summary>
+        </member>
+        <member name="M:Dynamo.Engine.Profiling.ProfilingSession.Dispose">
+            <summary>
+            Ensure that the event handlers are disconnected when the profiling session is terminated.
+            </summary>
+        </member>
+        <member name="P:Dynamo.Engine.Profiling.ProfilingSession.ProfilingData">
+            <summary>
+            Return an interface to the profiling data for this profiling session.
+            </summary>
+        </member>
         <member name="T:Dynamo.Engine.ShortestQualifiedNameReplacer">
             <summary>
             Replace a fully qualified function call with short name. 
@@ -2033,235 +2237,6 @@
             <param name="member">The FunctionDescriptor object corresponding to the method.</param>
             <param name="xml"></param>
             <returns>A collection of return descriptions from the documentation returns tag.</returns>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.CompilationEventArgs.#ctor(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode},Dynamo.Engine.CodeGeneration.CompilationContext)">
-            <summary>
-            Creates CompilationEventArgs
-            </summary>
-            <param name="node">The node being compiled.</param>
-            <param name="inputNodes">List of input ast nodes.</param>
-            <param name="context">Compilation context.</param>
-        </member>
-        <member name="P:Dynamo.Engine.CodeGeneration.CompilationEventArgs.Node">
-            <summary>
-            Returns Guid of the node being compiled.
-            </summary>
-        </member>
-        <member name="P:Dynamo.Engine.CodeGeneration.CompilationEventArgs.AdditionalAstNodes">
-            <summary>
-            Returns a list of additional ast nodes as added by the event handlers.
-            </summary>
-        </member>
-        <member name="P:Dynamo.Engine.CodeGeneration.CompilationEventArgs.InputAstNodes">
-            <summary>
-            Returns input ast nodes as passed to the node being compiled.
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.CompilationEventArgs.AddAstNode(ProtoCore.AST.AssociativeAST.AssociativeNode)">
-            <summary>
-            Provides an oppotunity to the event handlers to add additional AST nodes
-            during the compilation.
-            </summary>
-            <param name="node">Additonal AST node to add.</param>
-        </member>
-        <member name="P:Dynamo.Engine.CodeGeneration.CompilationEventArgs.Context">
-            <summary>
-            Compilation context
-            </summary>
-        </member>
-        <member name="T:Dynamo.Engine.CodeGeneration.AstCompilationEvents">
-            <summary>
-            Provides AST compilation related events. Clients can provide more AST
-            to be included during compilation events.
-            </summary>
-        </member>
-        <member name="E:Dynamo.Engine.CodeGeneration.AstCompilationEvents.PreCompilation">
-            <summary>
-            Compilation for a node has begun.
-            </summary>
-        </member>
-        <member name="E:Dynamo.Engine.CodeGeneration.AstCompilationEvents.PostCompilation">
-            <summary>
-            Compilation for a node has completed.
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstCompilationEvents.NotifyPreCompilation(System.Object,Dynamo.Engine.CodeGeneration.CompilationEventArgs)">
-            <summary>
-            Notifies pre compilation event
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstCompilationEvents.NotifyPostCompilation(System.Object,Dynamo.Engine.CodeGeneration.CompilationEventArgs)">
-            <summary>
-            Notifies post compilation event.
-            </summary>
-        </member>
-        <member name="T:Dynamo.Engine.CodeGeneration.IAstNodeContainer">
-            <summary>
-            Returns notification for AST compilation events.                                                 
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiling(System.Guid)">
-            <summary>
-            Indicates to start compiling a NodeModel to AST nodes.
-            </summary>
-            <param name="nodeGuid"></param>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.IAstNodeContainer.OnCompiled(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
-            <summary>
-            Indicates a NodeModel has been compiled to AST nodes. 
-            </summary>
-            <param name="nodeGuid"></param>
-            <param name="astNodes"></param>
-        </member>
-        <member name="T:Dynamo.Engine.CodeGeneration.CompilingEventArgs">
-            <summary>
-            This event is triggerred when compiling a NodeModel to AST nodes.
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.CompilingEventArgs.#ctor(System.Guid)">
-            Construct ASTBuildingEventArgs with NodeModel.
-        </member>
-        <member name="P:Dynamo.Engine.CodeGeneration.CompilingEventArgs.Node">
-            <summary>
-            Guid of NodeModel that is being compiled to AST.
-            </summary>
-        </member>
-        <member name="T:Dynamo.Engine.CodeGeneration.CompiledEventArgs">
-            <summary>
-            This event is triggered when a NodeModel has been compiled to a list of
-            AST nodes.
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.CompiledEventArgs.#ctor(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
-            <summary>
-            Construct ASTBuiltEventArgs with NodeModel and AST nodes.
-            </summary>
-            <param name="node"></param>
-            <param name="astNodes"></param>
-        </member>
-        <member name="P:Dynamo.Engine.CodeGeneration.CompiledEventArgs.Node">
-            <summary>
-            Guid of node that has been built to AST nodes.
-            </summary>
-        </member>
-        <member name="P:Dynamo.Engine.CodeGeneration.CompiledEventArgs.AstNodes">
-            <summary>
-            Built AST nodes.
-            </summary>
-        </member>
-        <member name="T:Dynamo.Engine.CodeGeneration.CompilationContext">
-            <summary>
-            The context of AST compilation
-            </summary>
-        </member>
-        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.None">
-            <summary>
-            No specific context.
-            </summary>
-        </member>
-        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.DeltaExecution">
-            <summary>
-            Compiled AST nodes finally will be executed.
-            </summary>
-        </member>
-        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.NodeToCode">
-            <summary>
-            Compiled AST nodes used in node to code.
-            </summary>
-        </member>
-        <member name="F:Dynamo.Engine.CodeGeneration.CompilationContext.PreviewGraph">
-            <summary>
-            Compiled AST nodes used in previwing graph.
-            </summary>
-        </member>
-        <member name="T:Dynamo.Engine.CodeGeneration.AstBuilder">
-            <summary>
-            AstBuilder is a factory class to create different kinds of AST nodes.
-            </summary>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.#ctor(Dynamo.Engine.CodeGeneration.IAstNodeContainer)">
-            <summary>
-            Construct a AstBuilder with AST node contiainer.
-            </summary>
-            <param name="nodeContainer"></param>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.TopologicalSort(System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel})">
-            <summary>
-                Sort nodes in topological order.
-            </summary>
-            <param name="nodes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.BfsTraverse(Dynamo.Graph.Nodes.NodeModel,System.Collections.Generic.Dictionary{Dynamo.Graph.Nodes.NodeModel,Dynamo.Engine.CodeGeneration.AstBuilder.MarkFlag},System.Collections.Generic.Queue{Dynamo.Graph.Nodes.NodeModel})">
-            <summary>
-            Starts from the input node as root, do breadth-first and post-order
-            traversal of the graph (inputs nodes as children nodes). Breadth-first
-            traversal ensures all inputs nodes are visited in their input order 
-            and post-order traversal ensures all upstream nodes are visited 
-            firstly. 
-            </summary>
-            <param name="node">Root node</param>
-            <param name="nodeFlags">Dictionary to record if a node has been visited or not</param>
-            <param name="sortedNodes">Record all visited nodes</param>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.TopologicalSortForGraph(System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel})">
-             <summary>
-             Topological sort *the whole graph*. If the input nodes are part of a
-             graph, it does not promise to generate a good topological order. For 
-             example, for the following graph:
-             
-                     +---+
-                     | A | -----+
-                     +---+      +----> +---+
-                                       | C |
-                                +----> +---+
-                     +---+      |
-                     | B | -----+
-                     +---+
-             
-             Their ideal topological order is A -> B -> C. If the input is only {A, B}, 
-             it may return {B, A} which is not OK in node to code.
-            
-             Note it is much slower than TopologicalSort().
-             </summary>
-             <param name="nodes"></param>
-             <returns></returns>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.CompileToAstNodes(System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel},Dynamo.Engine.CodeGeneration.CompilationContext,System.Boolean)">
-            <summary>
-            Compile a collection of NodeModel to AST nodes in different contexts.
-            If the context is ForNodeToCode, nodes should already be sorted in 
-            topological order.
-            </summary>
-            <param name="nodes"></param>
-            <param name="context"></param>
-            <param name="verboseLogging"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.CompileCustomNodeDefinition(System.Guid,System.Collections.Generic.IEnumerable{System.String},System.String,System.Collections.Generic.IEnumerable{Dynamo.Graph.Nodes.NodeModel},System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode},System.Collections.Generic.IEnumerable{Dynamo.Library.TypedParameter},System.Boolean)">
-            <summary>
-                Compiles a collection of Dynamo nodes into a function definition for a custom node.
-            </summary>
-            <param name="functionId"></param>
-            <param name="returnKeys"></param>
-            <param name="functionName"></param>
-            <param name="funcBody"></param>
-            <param name="outputNodes"></param>
-            <param name="parameters"></param>
-            <param name="verboseLogging"></param>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.OnAstNodeBuilding(System.Guid)">
-            <summary>
-                Notify IAstNodeContainer that starts building AST nodes.
-            </summary>
-            <param name="nodeGuid"></param>
-        </member>
-        <member name="M:Dynamo.Engine.CodeGeneration.AstBuilder.OnAstNodeBuilt(System.Guid,System.Collections.Generic.IEnumerable{ProtoCore.AST.AssociativeAST.AssociativeNode})">
-            <summary>
-                Notify IAstNodeContainer that AST nodes have been built.
-            </summary>
-            <param name="nodeGuid"></param>
-            <param name="astNodes"></param>
         </member>
         <member name="T:Dynamo.Engine.FunctionType">
             <summary>
