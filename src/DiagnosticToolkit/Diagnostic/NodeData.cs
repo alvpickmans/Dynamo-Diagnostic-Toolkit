@@ -17,9 +17,6 @@ namespace DiagnosticToolkit
         #region Private Properties
         private TimeSpan? executionTime;
         private DateTime? executionStartTime;
-        private StringWriter traceWriter;
-        private TraceListener traceListener;
-        private string traceData = string.Empty;
         #endregion
 
         #region Public Properties
@@ -41,11 +38,9 @@ namespace DiagnosticToolkit
         {
             get => executionTime.HasValue ? (int)executionTime.Value.TotalMilliseconds : -1;            
         }
-
-        public IEnumerable<PerformanceData> Statistics { get { return DiagnosticToolkitWindowViewModel.NodePerformance.GetNodePerformance(Node); } }
-
+        
         public IEnumerable<int> OutputPortsDataSize { get; set; } 
-        public string TraceData { get { return traceData; } }
+
         #endregion
 
         #region Public Constructors
@@ -65,8 +60,6 @@ namespace DiagnosticToolkit
 
             if (e.Type == NodeExecutedType.Start)
             {
-                RegisterTraceListener();
-
                 executionStartTime = DateTime.Now;
                 executionTime = null;
                 InputDataSize = size;
@@ -78,7 +71,6 @@ namespace DiagnosticToolkit
                 executionStartTime = null;
                 OutputDataSize = size;
                 OutputPortsDataSize = (e.Data as IEnumerable).Cast<object>().Select(Count);
-                UnRegisterTraceListener();
 
                 RaisePropertyChanged("OutputDataSize");
             }
@@ -96,7 +88,6 @@ namespace DiagnosticToolkit
         {
             executionStartTime = null;
             executionTime = null;
-            traceData = string.Empty;
         }
 
         public PerformanceData GetPerformanceData()
@@ -109,32 +100,6 @@ namespace DiagnosticToolkit
         {
             Node = null;
             Node.NodeExecuted -= OnNodeExecuted;
-            UnRegisterTraceListener();
-        }
-
-        private void UnRegisterTraceListener()
-        {
-            if (traceListener == null)
-                return;
-        
-            Trace.Flush();
-            traceData = traceWriter.ToString();
-            
-            Trace.Listeners.Remove(traceListener);
-            
-            traceListener.Dispose();
-            traceWriter.Dispose();
-            
-            traceListener = null;
-            traceWriter = null;
-        }
-
-        private void RegisterTraceListener()
-        {
-            traceData = string.Empty;
-            traceWriter = new StringWriter();
-            traceListener = new TextWriterTraceListener(traceWriter);
-            Trace.Listeners.Add(traceListener);
         }
 
         private int Count(object data)

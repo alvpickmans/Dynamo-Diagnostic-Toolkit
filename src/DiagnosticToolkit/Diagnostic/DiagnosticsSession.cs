@@ -32,14 +32,6 @@ namespace DiagnosticToolkit
 
         public IWorkspaceModel WorkSpace { get { return workspace; } }
 
-        public string GetTraceData(NodeModel node)
-        {
-            NodeData nodeData;
-            if (data.TryGetValue(node.GUID, out nodeData))
-                return nodeData.TraceData;
-            return string.Empty;
-        }
-
         public void Dispose()
         {
             UnregisterEventHandlers();
