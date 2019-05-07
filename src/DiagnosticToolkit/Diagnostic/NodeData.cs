@@ -14,18 +14,76 @@ namespace DiagnosticToolkit
 {
     class NodeData : NotificationObject, IDisposable
     {
+        #region Private Properties
         private TimeSpan? executionTime;
         private DateTime? executionStartTime;
         private StringWriter traceWriter;
         private TraceListener traceListener;
         private string traceData = string.Empty;
+        #endregion
+
+        #region Public Properties
+        public NodeModel Node { get; private set; }
+
+        public string NodeId { get => this.Node.GUID.ToString(); }
+
+        public double CenterX { get => this.Node.CenterX; }
+
+        public double CenterY { get => this.Node.CenterY; }
+
+        public int InputDataSize { get; private set; }
+
+        public int OutputDataSize { get; private set; }
+
+        public bool HasPerformanceData { get => executionTime.HasValue; }
+        
+        public int ExecutionTime
+        {
+            get => executionTime.HasValue ? (int)executionTime.Value.TotalMilliseconds : -1;            
+        }
+
+        public IEnumerable<PerformanceData> Statistics { get { return DiagnosticToolkitWindowViewModel.NodePerformance.GetNodePerformance(Node); } }
+
+        public IEnumerable<int> OutputPortsDataSize { get; set; } 
+        public string TraceData { get { return traceData; } }
+        #endregion
+
+        #region Public Constructors
         public NodeData(NodeModel node)
         {
-            NodeId = node.GUID.ToString();
             Node = node;
-            //Ensure that callback is registered with DataBridge
-            DataBridge.Instance.RegisterCallback(NodeId, RecordEvaluationState);
             Node.PropertyChanged += OnNodePropertyChanged;
+            Node.NodeExecuted += OnNodeExecuted;
+        } 
+        #endregion
+
+        private void OnNodeExecuted(object sender, NodeExecutedEventArgs e)
+        {
+            var size = Count(e.Data);
+            if (size > 0 && Node.IsInputNode && !executionStartTime.HasValue) //For input node start notification may not come
+                executionStartTime = DateTime.Now;
+
+            if (e.Type == NodeExecutedType.Start)
+            {
+                RegisterTraceListener();
+
+                executionStartTime = DateTime.Now;
+                executionTime = null;
+                InputDataSize = size;
+                RaisePropertyChanged("InputDataSize");
+            }
+            else
+            {
+                executionTime = DateTime.Now.Subtract(executionStartTime.Value);
+                executionStartTime = null;
+                OutputDataSize = size;
+                OutputPortsDataSize = (e.Data as IEnumerable).Cast<object>().Select(Count);
+                UnRegisterTraceListener();
+
+                RaisePropertyChanged("OutputDataSize");
+            }
+            RaisePropertyChanged("IsEvaluating");
+            RaisePropertyChanged("ExecutionTime");
         }
 
         void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -46,42 +104,12 @@ namespace DiagnosticToolkit
             return new PerformanceData { ExecutionTime = ExecutionTime, InputSize = InputDataSize, OutputSize = OutputDataSize };
         }
 
-        public string TraceData { get { return traceData; } }
 
         public void Dispose()
         {
             Node = null;
-            DataBridge.Instance.UnregisterCallback(NodeId);
+            Node.NodeExecuted -= OnNodeExecuted;
             UnRegisterTraceListener();
-        }
-
-        private void RecordEvaluationState(object data)
-        {
-            var size = Count(data);
-            if(size > 0 && Node.IsInputNode && !executionStartTime.HasValue) //For input node start notification may not come
-                executionStartTime = DateTime.Now;
-                
-            if (!executionStartTime.HasValue)
-            {
-                RegisterTraceListener();
-
-                executionStartTime = DateTime.Now;
-                executionTime = null;
-                InputDataSize = size;
-                RaisePropertyChanged("InputDataSize");
-            }
-            else
-            {
-                executionTime = DateTime.Now.Subtract(executionStartTime.Value);
-                executionStartTime = null;
-                OutputDataSize = size;
-                OutputPortsDataSize = (data as IEnumerable).Cast<object>().Select(Count);
-                UnRegisterTraceListener();
-
-                RaisePropertyChanged("OutputDataSize");
-            }
-            RaisePropertyChanged("IsEvaluating");
-            RaisePropertyChanged("ExecutionTime");
         }
 
         private void UnRegisterTraceListener()
@@ -122,32 +150,6 @@ namespace DiagnosticToolkit
 
             return count;
         }
-
-        public bool IsEvaluating { get { return executionStartTime.HasValue; } }
-
-        public int ExecutionTime
-        {
-            get
-            {
-                return executionTime.HasValue ? (int)executionTime.Value.TotalMilliseconds : -1;
-            }
-        }
-
-        public string NodeId { get; private set; }
-
-        public int InputDataSize { get; private set; }
-
-        public int OutputDataSize { get; private set; }
-
-        public bool HasPerformanceData()
-        {
-            return executionTime.HasValue;
-        }
-
-        public NodeModel Node { get; private set; }
-
-        public IEnumerable<PerformanceData> Statistics { get { return DiagnosticToolkitWindowViewModel.NodePerformance.GetNodePerformance(Node); } }
-
-        public IEnumerable<int> OutputPortsDataSize { get; set; }
+        
     }
 }

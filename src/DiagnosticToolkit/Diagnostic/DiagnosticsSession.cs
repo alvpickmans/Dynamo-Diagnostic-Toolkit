@@ -101,7 +101,7 @@ namespace DiagnosticToolkit
             EvaluatedNodes.Clear();
             foreach (var item in data)
             {
-                if (item.Value.HasPerformanceData())
+                if (item.Value.HasPerformanceData)
                 {
                     if (item.Value.ExecutionTime > MaxExecutionTime)
                         MaxExecutionTime = item.Value.ExecutionTime;
@@ -114,43 +114,10 @@ namespace DiagnosticToolkit
 
             OnSessionExecuted(null);
         }
-
-        void OnPreCompilation(object sender, CompilationEventArgs e)
-        {
-            if (e.Context != CompilationContext.DeltaExecution) return;
-
-            var nodeData = GetNodeDataFromGuid(e.Node);
-            //if (nodeData.Node.IsInputNode) return;
-
-            var nodeId = e.Node.ToString();
-
-            var beginExecutionCallback = AstFactory.BuildAssignment(
-                AstFactory.BuildIdentifier(nodeData.Node.AstIdentifierBase + "_beginCallback"),
-                DataBridge.GenerateBridgeDataAst(nodeId, AstFactory.BuildExprList(e.InputAstNodes.ToList())));
-
-            e.AddAstNode(beginExecutionCallback);
-        }
-
-        void OnPostCompilation(object sender, CompilationEventArgs e)
-        {
-            if (e.Context != CompilationContext.DeltaExecution) return;
-
-            var nodeData = GetNodeDataFromGuid(e.Node);
-            //if (nodeData.Node.IsInputNode) return;
-            
-            var nodeId = e.Node.ToString();
-            var endExecutionCallback = AstFactory.BuildAssignment(
-                AstFactory.BuildIdentifier(nodeData.Node.AstIdentifierBase + "_endCallback"),
-                DataBridge.GenerateBridgeDataAst(nodeId, AstFactory.BuildExprList(Enumerable.Range(0,nodeData.Node.OutPorts.Count).Select(i=>(AssociativeNode)nodeData.Node.GetAstIdentifierForOutputIndex(i)).ToList())));
-            e.AddAstNode(endExecutionCallback);
-        }
-
         private void RegisterEventHandlers(IWorkspaceModel workspace)
         {
             workspace.NodeAdded += OnNodeAdded;
             workspace.NodeRemoved += OnNodeRemoved;
-            AstCompilationEvents.PreCompilation += OnPreCompilation;
-            AstCompilationEvents.PostCompilation += OnPostCompilation;
             ExecutionEvents.GraphPreExecution += OnGraphPreExecution;
             ExecutionEvents.GraphPostExecution += OnGraphPostExecution;
         }
@@ -159,8 +126,6 @@ namespace DiagnosticToolkit
         {
             workspace.NodeAdded -= OnNodeAdded;
             workspace.NodeRemoved -= OnNodeRemoved;
-            AstCompilationEvents.PreCompilation -= OnPreCompilation;
-            AstCompilationEvents.PostCompilation -= OnPostCompilation;
             ExecutionEvents.GraphPreExecution -= OnGraphPreExecution;
             ExecutionEvents.GraphPostExecution -= OnGraphPostExecution;
         }

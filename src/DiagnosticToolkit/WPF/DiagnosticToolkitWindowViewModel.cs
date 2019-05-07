@@ -128,14 +128,13 @@ namespace DiagnosticToolkit
 
                 List<ScatterPoint> points = nodeViewCollector.NodeViews.Select(nv =>
                 {
-                    Point location = nv.GetLocation();
                     NodeData nodeData = session.EvaluatedNodes.FirstOrDefault(nd => nd.Node.GUID == nv.ViewModel.NodeModel.GUID);
                     var time = nodeData == null ? 0 : nodeData.ExecutionTime;
                     var diameter = time.Map(minDiameter, maxDiameter, minimum, maximum);
 
                     //nv.AddTime(time);
 
-                    ScatterPoint p = new ScatterPoint(location.X, -location.Y, diameter);
+                    ScatterPoint p = new ScatterPoint(nodeData.CenterX, -nodeData.CenterY, diameter);
 
                     return p;
                 }).ToList();
