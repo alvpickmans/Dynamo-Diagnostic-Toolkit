@@ -23,6 +23,7 @@ namespace DiagnosticToolkit
     public class DiagnosticToolkitWindowViewModel : NotificationObject, IDisposable
     {
         private readonly ViewLoadedParams viewParameters;
+        private readonly Window dynamoWindow;
         private readonly DynamoViewModel dynamoViewModel;
         private readonly DynamoModel dynamoModel;
         private DiagnosticsSession session;
@@ -30,7 +31,6 @@ namespace DiagnosticToolkit
         private static PerformanceStatistics statistics = new PerformanceStatistics();
 
         private NodeViewCollector nodeViewCollector;
-        private Window diagnosticWindow;
 
         #region UI Properties
         private SeriesCollection nodeViewData { get; set; }
@@ -78,11 +78,12 @@ namespace DiagnosticToolkit
         {
             this.viewParameters = parameters;
             this.nodeViewCollector = new NodeViewCollector(parameters);
-            this.dynamoViewModel = this.viewParameters.DynamoWindow.DataContext as DynamoViewModel;
+            this.dynamoWindow = this.viewParameters.DynamoWindow;
+            this.dynamoViewModel = this.dynamoWindow.DataContext as DynamoViewModel;
             this.dynamoModel = this.dynamoViewModel.Model;
             
             
-            //Creates statistic json file, if file exsists load that.
+            //Creates statistic json file, if file exists load that.
             statfile = Path.Combine(this.dynamoModel.PathManager.UserDataDirectory, "Statistics.json");
             if (File.Exists(statfile))
             {
@@ -112,14 +113,9 @@ namespace DiagnosticToolkit
             this.SetupSession(model);
         }
 
-        public void AssignWindow(Window window)
-        {
-            diagnosticWindow = window;
-        }
-
         private void UpdateNodeViewData (DiagnosticsSession session)
         {
-            diagnosticWindow.Dispatcher.Invoke(() => {
+            this.dynamoWindow.Dispatcher.Invoke(() => {
 
                 int minDiameter = session.EvaluatedNodes.Min(nd => nd.ExecutionTime);
                 int maxDiameter = session.EvaluatedNodes.Max(nd => nd.ExecutionTime);

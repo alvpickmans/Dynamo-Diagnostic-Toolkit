@@ -51,7 +51,7 @@ namespace DiagnosticToolkit
                     Owner = parameters.DynamoWindow
                 };
 
-                diagnosticViewModel.AssignWindow(window);
+                //diagnosticViewModel.AssignWindow(window);
 
                 window.Left = window.Owner.Left + 400;
                 window.Top = window.Owner.Top + 200;
@@ -81,7 +81,7 @@ namespace DiagnosticToolkit
         {
             get
             {
-                return "DiagnosticToolkit View Extension";
+                return "DiagnosticToolkit";
             }
         }
 

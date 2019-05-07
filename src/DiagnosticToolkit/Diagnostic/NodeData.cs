@@ -63,7 +63,6 @@ namespace DiagnosticToolkit
                 executionStartTime = DateTime.Now;
                 executionTime = null;
                 InputDataSize = size;
-                RaisePropertyChanged("InputDataSize");
             }
             else
             {
@@ -71,11 +70,7 @@ namespace DiagnosticToolkit
                 executionStartTime = null;
                 OutputDataSize = size;
                 OutputPortsDataSize = (e.Data as IEnumerable).Cast<object>().Select(Count);
-
-                RaisePropertyChanged("OutputDataSize");
             }
-            RaisePropertyChanged("IsEvaluating");
-            RaisePropertyChanged("ExecutionTime");
         }
 
         void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -98,8 +93,8 @@ namespace DiagnosticToolkit
 
         public void Dispose()
         {
-            Node = null;
             Node.NodeExecuted -= OnNodeExecuted;
+            Node = null;
         }
 
         private int Count(object data)
