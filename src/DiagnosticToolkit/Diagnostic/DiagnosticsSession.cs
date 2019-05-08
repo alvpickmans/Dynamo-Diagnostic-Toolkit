@@ -22,12 +22,23 @@ namespace DiagnosticToolkit
         private DateTime executionStartTime;
         private TimeSpan executionTime;
 
+        public List<NodeData> Nodes => data.Values.ToList();
+
         public DiagnosticsSession(IWorkspaceModel workspace, PerformanceStatistics statistics)
         {
             this.statistics = statistics;
             this.workspace = workspace;
             RegisterEventHandlers(workspace);
             EvaluatedNodes = new List<NodeData>();
+
+            if (workspace.Nodes.Any())
+            {
+                // Collect any existing node
+                foreach (var node in workspace.Nodes)
+                {
+                    data.Add(node.GUID, new NodeData(node));
+                }
+            }
         }
 
         public IWorkspaceModel WorkSpace { get { return workspace; } }
@@ -62,6 +73,8 @@ namespace DiagnosticToolkit
         void OnNodeAdded(NodeModel obj)
         {
             data.Add(obj.GUID, new NodeData(obj));
+
+            this.OnNodeDataAdded(obj.GUID, new EventArgs());
         }
 
         void OnNodeRemoved(NodeModel obj)
@@ -71,6 +84,7 @@ namespace DiagnosticToolkit
                 nodeData.Dispose();
 
             data.Remove(obj.GUID);
+            this.OnNodeDataRemoved(obj.GUID, new EventArgs());
         }
 
         void OnGraphPreExecution(Dynamo.Session.IExecutionSession session)
@@ -142,6 +156,28 @@ namespace DiagnosticToolkit
         }
 
         public event EventHandler SessionExecuted;
+
+        protected virtual void OnNodeDataAdded(object sender, EventArgs e)
+        {
+            EventHandler handler = NodeDataAdded;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public event EventHandler NodeDataAdded;
+
+        protected virtual void OnNodeDataRemoved(object sender, EventArgs e)
+        {
+            EventHandler handler = NodeDataRemoved;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public event EventHandler NodeDataRemoved;
 
         #endregion
     }

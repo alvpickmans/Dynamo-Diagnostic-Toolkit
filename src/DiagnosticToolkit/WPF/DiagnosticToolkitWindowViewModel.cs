@@ -32,11 +32,25 @@ namespace DiagnosticToolkit
 
         private NodeViewCollector nodeViewCollector;
 
+        private double MinDiameter = 5;
+        private double MaxDiameter = 50;
+
         #region UI Properties
         private SeriesCollection nodeViewData { get; set; }
         public SeriesCollection NodeViewData
         {
-            get => nodeViewData;
+            get {
+                return new SeriesCollection
+                {
+                    new ScatterSeries
+                    {
+                        Values = new ChartValues<ScatterPoint>(this.session.Nodes),
+                        MinPointShapeDiameter = this.MinDiameter,
+                        MaxPointShapeDiameter = this.MaxDiameter
+                    }
+
+                };
+            }
             set
             {
                 nodeViewData = value;
@@ -100,6 +114,13 @@ namespace DiagnosticToolkit
         {
             this.dynamoModel.WorkspaceAdded += OnWorkspaceChanged;
             this.session.SessionExecuted += OnSessionExecuted;
+            this.session.NodeDataAdded += OnNodeDataUpdated;
+            this.session.NodeDataRemoved += OnNodeDataUpdated;
+        }
+
+        private void OnNodeDataUpdated(object sender, EventArgs e)
+        {
+            RaisePropertyChanged("NodeViewData");
         }
 
         private void UnregisterEvents()
@@ -117,34 +138,21 @@ namespace DiagnosticToolkit
         {
             this.dynamoWindow.Dispatcher.Invoke(() => {
 
-                int minDiameter = session.EvaluatedNodes.Min(nd => nd.ExecutionTime);
-                int maxDiameter = session.EvaluatedNodes.Max(nd => nd.ExecutionTime);
-                int minimum = 5;
-                int maximum = 50;
+                double minDiameter = session.Nodes.Count < 2 ? this.MinDiameter : session.Nodes.Min(nd => nd.ExecutionTime);
+                double maxDiameter = session.Nodes.Count < 2 ? this.MaxDiameter : session.Nodes.Max(nd => nd.ExecutionTime);
 
-                List<ScatterPoint> points = nodeViewCollector.NodeViews.Select(nv =>
+
+                nodeViewCollector.NodeViews.ForEach(nv =>
                 {
-                    NodeData nodeData = session.EvaluatedNodes.FirstOrDefault(nd => nd.Node.GUID == nv.ViewModel.NodeModel.GUID);
-                    var time = nodeData == null ? 0 : nodeData.ExecutionTime;
-                    var diameter = time.Map(minDiameter, maxDiameter, minimum, maximum);
+                    NodeData nodeData = session.GetNodeDataFromGuid(nv.ViewModel.NodeModel.GUID);
+                    nodeData.Weight = nodeData.Weight.Map(minDiameter, maxDiameter, this.MinDiameter, this.MaxDiameter);
 
-                    //nv.AddTime(time);
+                    nv.AddTime(nodeData.ExecutionTime);
 
-                    ScatterPoint p = new ScatterPoint(nodeData.CenterX, -nodeData.CenterY, diameter);
+                });
 
-                    return p;
-                }).ToList();
 
-                this.NodeViewData = new SeriesCollection
-                {
-                    new ScatterSeries
-                    {
-                        Values = new ChartValues<ScatterPoint>(points),
-                        MinPointShapeDiameter = minimum,
-                        MaxPointShapeDiameter = maximum
-                    }
-
-                };
+                RaisePropertyChanged("NodeViewData");
             });
         }
 

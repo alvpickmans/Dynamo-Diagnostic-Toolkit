@@ -47,7 +47,7 @@ namespace DiagnosticToolkit.Utilities
             
         }
 
-        public static double Map(this int value, double min, double max, double newMin, double newMax)
+        public static double Map(this double value, double min, double max, double newMin, double newMax)
         {
             double normal = (value - min) / (max - min);
             return (normal * (newMax - newMin)) + newMin;

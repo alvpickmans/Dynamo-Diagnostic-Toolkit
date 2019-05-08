@@ -9,11 +9,16 @@ using System.Threading.Tasks;
 using Dynamo.Core;
 using Dynamo.Graph.Nodes;
 using VMDataBridge;
+using LiveCharts.Defaults;
+using DiagnosticToolkit.Utilities;
 
 namespace DiagnosticToolkit
 {
-    class NodeData : NotificationObject, IDisposable
+    class NodeData : ScatterPoint, IDisposable
     {
+        public static double MinWeight = 0;
+        public static double MaxWeight = 50;
+
         #region Private Properties
         private TimeSpan? executionTime;
         private DateTime? executionStartTime;
@@ -24,10 +29,10 @@ namespace DiagnosticToolkit
 
         public string NodeId { get => this.Node.GUID.ToString(); }
 
-        public double CenterX { get => this.Node.CenterX; }
+        //public double CenterX { get => this.Node.CenterX; }
 
-        public double CenterY { get => this.Node.CenterY; }
-
+        //public double CenterY { get => this.Node.CenterY; }
+        
         public int InputDataSize { get; private set; }
 
         public int OutputDataSize { get; private set; }
@@ -47,6 +52,9 @@ namespace DiagnosticToolkit
         public NodeData(NodeModel node)
         {
             Node = node;
+            this.X = node.CenterX;
+            this.Y = -node.CenterY;
+            this.Weight = 0;
             Node.PropertyChanged += OnNodePropertyChanged;
             Node.NodeExecuted += OnNodeExecuted;
         } 
@@ -62,11 +70,13 @@ namespace DiagnosticToolkit
             {
                 executionStartTime = DateTime.Now;
                 executionTime = null;
+                Weight = 0;
                 InputDataSize = size;
             }
             else
             {
                 executionTime = DateTime.Now.Subtract(executionStartTime.Value);
+                Weight = executionTime.Value.Milliseconds;
                 executionStartTime = null;
                 OutputDataSize = size;
                 OutputPortsDataSize = (e.Data as IEnumerable).Cast<object>().Select(Count);
@@ -76,13 +86,17 @@ namespace DiagnosticToolkit
         void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if(e.PropertyName == "Position")
-                RaisePropertyChanged("Node");
+            {
+                this.X =few changes
+            }
+                
         }
 
         public void Reset()
         {
             executionStartTime = null;
             executionTime = null;
+            this.Weight = 0;
         }
 
         public PerformanceData GetPerformanceData()

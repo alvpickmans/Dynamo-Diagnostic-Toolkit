@@ -66,7 +66,8 @@ namespace DiagnosticToolkit
 
         public void Shutdown()
         {
-            diagnosticViewModel.SaveData();
+            if (diagnosticViewModel != null)
+                diagnosticViewModel.SaveData();
         }
 
         public string UniqueId
