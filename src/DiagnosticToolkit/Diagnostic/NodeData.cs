@@ -87,7 +87,8 @@ namespace DiagnosticToolkit
         {
             if(e.PropertyName == "Position")
             {
-                this.X =few changes
+                this.X = this.Node.CenterX;
+                this.Y = -this.Node.CenterY;
             }
                 
         }
