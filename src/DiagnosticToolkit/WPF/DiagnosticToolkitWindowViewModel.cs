@@ -186,5 +186,12 @@ namespace DiagnosticToolkit
         {
             UnregisterEvents();
         }
+
+
+        //private void CartesianChart_DataClick(object sender, ChartPoint chartPoint)
+        //{
+        //    var node = this.nodeViewCollector.Collector.Where(kvp )
+        //    Selection.ZoomToObject(this.dynamoViewModel, )
+        //}
     }
 }

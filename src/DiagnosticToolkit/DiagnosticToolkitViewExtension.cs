@@ -42,7 +42,10 @@ namespace DiagnosticToolkit
             vm = parameters.DynamoWindow.DataContext as DynamoViewModel;
 
             toolkitMenuItem = new MenuItem { Header = "Diagnostic Toolkit" };
-            toolkitMenuItem.Click += (sender, args) =>
+
+            var launchToolkit = new MenuItem { Header = "Launch" };
+
+            launchToolkit.Click += (sender, args) =>
             {
                 diagnosticViewModel = new DiagnosticToolkitWindowViewModel(parameters);
                 var window = new DiagnosticToolkitWindow
@@ -60,8 +63,12 @@ namespace DiagnosticToolkit
                 window.Show();
             };
 
-            parameters.AddSeparator(MenuBarType.View, new Separator());
-            parameters.AddMenuItem(MenuBarType.View, toolkitMenuItem);
+            toolkitMenuItem.Items.Add(launchToolkit);
+
+            parameters.dynamoMenu.Items.Add(toolkitMenuItem);
+
+            //parameters.AddSeparator(MenuBarType.View, new Separator());
+            //parameters.AddMenuItem(MenuBarType.View, toolkitMenuItem);
         }
 
         public void Shutdown()

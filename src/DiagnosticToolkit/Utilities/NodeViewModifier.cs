@@ -22,9 +22,9 @@ namespace DiagnosticToolkit.Utilities
 
         public static NodeView AddTime(this NodeView nodeView, int time)
         {
-            Label label = new Label();
-            label.Content = time + " ms";
-            nodeView.inputGrid.Children.Add(label);
+            //Label label = new Label();
+            //label.Content = time + " ms";
+            //nodeView.inputGrid.Children.Add(label);
             return nodeView;
         }
 
