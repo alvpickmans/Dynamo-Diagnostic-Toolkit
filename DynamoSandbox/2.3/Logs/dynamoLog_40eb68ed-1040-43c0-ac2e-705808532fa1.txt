@@ -1,8 +1,0 @@
-Dynamo log started 2019-05-03 18:31:34Z
-2019-05-03 18:31:34Z : Python template set to default.
-2019-05-03 18:31:34Z : Dynamo -- Build 2.3.0.4876
-2019-05-03 18:31:34Z : Duplicate migration type registered for SunPathDirection
-2019-05-03 18:31:34Z : Dynamo will use the package manager server at : https://www.dynamopackages.com
-2019-05-03 18:31:34Z : DynamoPackageManager (id: FCABC211-D56B-4109-AF18-F434DFE48139) extension is added
-2019-05-03 18:31:34Z : DynamoPackageManager (id: FCABC211-D56B-4109-AF18-F434DFE48139) extension is removed
-2019-05-03 18:31:34Z : Goodbye
