@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosticToolkit.Dynamo", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagnosticToolkit.Old", "DiagnosticToolkit.Old\DiagnosticToolkit.Old.csproj", "{CE4BB924-8181-4963-9D52-410AA7F10EC5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosticToolkit.UI", "DiagnosticToolkit.UI\DiagnosticToolkit.UI.csproj", "{AC6A701C-2F11-4788-B8E8-39E4FF91BAA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{CE4BB924-8181-4963-9D52-410AA7F10EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE4BB924-8181-4963-9D52-410AA7F10EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE4BB924-8181-4963-9D52-410AA7F10EC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC6A701C-2F11-4788-B8E8-39E4FF91BAA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC6A701C-2F11-4788-B8E8-39E4FF91BAA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC6A701C-2F11-4788-B8E8-39E4FF91BAA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC6A701C-2F11-4788-B8E8-39E4FF91BAA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

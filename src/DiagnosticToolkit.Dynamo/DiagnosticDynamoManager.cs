@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using DiagnosticToolkit.UI;
+using DiagnosticToolkit.UI.Views;
 
 namespace DiagnosticToolkit.Dynamo
 {
@@ -50,7 +52,8 @@ namespace DiagnosticToolkit.Dynamo
                     return;
                 }
 
-                MessageBox.Show("Can use disgnostic");
+                DiagnosticMainView view = new DiagnosticMainView();
+                view.Show();
             };
 
             this.mainMenu.Items.Add(launchToolkit);
