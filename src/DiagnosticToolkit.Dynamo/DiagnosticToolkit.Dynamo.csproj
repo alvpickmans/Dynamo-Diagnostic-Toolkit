@@ -28,6 +28,8 @@
   <ItemGroup>
     <Compile Include="DiagnosticDynamoManager.cs" />
     <Compile Include="DiagnosticViewExtension.cs" />
+    <Compile Include="Utilities\NodeViewCollector.cs" />
+    <Compile Include="Utilities\WindowExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
