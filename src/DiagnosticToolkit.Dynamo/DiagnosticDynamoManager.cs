@@ -14,19 +14,14 @@ namespace DiagnosticToolkit.Dynamo
 {
     public class DiagnosticDynamoManager : IDisposable
     {
-        private readonly Version MINIMUM_VERSION = new Version("2.3.0.5885");
         private ViewLoadedParams loadedParameters { get; set; }
         private DynamoViewModel dynamoVM { get; set; }
-        private Version dynamoVersion { get; set; }
         private MenuItem mainMenu { get; set; }
-
-        public bool CanUseDiagnostic => dynamoVersion >= MINIMUM_VERSION;
 
         public DiagnosticDynamoManager(ViewLoadedParams parameters)
         {
             this.loadedParameters = parameters;
             this.dynamoVM = parameters.DynamoWindow.DataContext as DynamoViewModel;
-            this.dynamoVersion = parameters.StartupParams.DynamoVersion;
 
             this.InitializeMenu();
         }
@@ -36,7 +31,7 @@ namespace DiagnosticToolkit.Dynamo
 
             this.mainMenu = new MenuItem()
             {
-                Header = "Diagnostic Toolkic"
+                Header = DiagnosticViewExtension.NAME
             };
 
             var launchToolkit = new MenuItem()
@@ -46,12 +41,6 @@ namespace DiagnosticToolkit.Dynamo
 
             launchToolkit.Click += (sender, args) =>
             {
-                if (!this.CanUseDiagnostic)
-                {
-                    MessageBox.Show($"The Diagnostic Toolkit cannot be used in your current Dynamo Version {dynamoVersion.ToString()}. Minimum version required is {MINIMUM_VERSION.ToString()}.");
-                    return;
-                }
-
                 DiagnosticMainView view = new DiagnosticMainView();
                 view.Show();
             };
