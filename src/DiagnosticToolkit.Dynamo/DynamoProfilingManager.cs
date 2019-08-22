@@ -12,13 +12,13 @@ using DiagnosticToolkit.UI.Views;
 
 namespace DiagnosticToolkit.Dynamo
 {
-    public class DiagnosticDynamoManager : IDisposable
+    public class DynamoProfilingManager : IDisposable
     {
         private ViewLoadedParams loadedParameters { get; set; }
         private DynamoViewModel dynamoVM { get; set; }
         private MenuItem mainMenu { get; set; }
 
-        public DiagnosticDynamoManager(ViewLoadedParams parameters)
+        public DynamoProfilingManager(ViewLoadedParams parameters)
         {
             this.loadedParameters = parameters;
             this.dynamoVM = parameters.DynamoWindow.DataContext as DynamoViewModel;

@@ -14,7 +14,7 @@ namespace DiagnosticToolkit.Dynamo
         public string UniqueId => "EF1D3B3E-3991-46BE-B75F-8429A49AE58C";
         public string Name => NAME;
 
-        private DiagnosticDynamoManager manager { get; set; }
+        private DynamoProfilingManager manager { get; set; }
 
         public void Startup(ViewStartupParams parameters)
         {
@@ -25,7 +25,7 @@ namespace DiagnosticToolkit.Dynamo
         {
             if(this.currentVersion >= MINIMUM_VERSION)
             {
-                this.manager = new DiagnosticDynamoManager(parameters);
+                this.manager = new DynamoProfilingManager(parameters);
                 return;
             }
 
