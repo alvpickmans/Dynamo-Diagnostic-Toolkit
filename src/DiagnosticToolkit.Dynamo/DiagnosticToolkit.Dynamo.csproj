@@ -28,6 +28,8 @@
   <ItemGroup>
     <Compile Include="DynamoProfilingManager.cs" />
     <Compile Include="DiagnosticViewExtension.cs" />
+    <Compile Include="Profiling\NodeProfilingData.cs" />
+    <Compile Include="Profiling\Session.cs" />
     <Compile Include="Utilities\NodeViewCollector.cs" />
     <Compile Include="Utilities\WindowExtensions.cs" />
   </ItemGroup>
@@ -45,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DiagnosticToolkit.Core\DiagnosticToolkit.Core.csproj" />
     <ProjectReference Include="..\DiagnosticToolkit.UI\DiagnosticToolkit.UI.csproj" />
   </ItemGroup>
 

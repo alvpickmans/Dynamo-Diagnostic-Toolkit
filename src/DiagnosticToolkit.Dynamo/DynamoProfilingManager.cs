@@ -1,14 +1,12 @@
-﻿using Dynamo.ViewModels;
+﻿using DiagnosticToolkit.Dynamo.Profiling;
+using Dynamo.Events;
+using Dynamo.Graph.Workspaces;
+using Dynamo.Models;
+using Dynamo.Session;
+using Dynamo.ViewModels;
 using Dynamo.Wpf.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using DiagnosticToolkit.UI;
-using DiagnosticToolkit.UI.Views;
 
 namespace DiagnosticToolkit.Dynamo
 {
@@ -16,42 +14,41 @@ namespace DiagnosticToolkit.Dynamo
     {
         private ViewLoadedParams loadedParameters { get; set; }
         private DynamoViewModel dynamoVM { get; set; }
-        private MenuItem mainMenu { get; set; }
+        private DynamoModel dynamoModel { get; set; }
+        public Session CurrentSession { get; private set; }
 
         public DynamoProfilingManager(ViewLoadedParams parameters)
         {
             this.loadedParameters = parameters;
             this.dynamoVM = parameters.DynamoWindow.DataContext as DynamoViewModel;
+            this.dynamoModel = this.dynamoVM.Model;
 
-            this.InitializeMenu();
+            this.CurrentSession = new Session(parameters.CurrentWorkspaceModel);
+
+            this.RegisterEventHandlers();
         }
 
-        public void InitializeMenu()
+        private void RegisterEventHandlers()
         {
+            this.dynamoModel.WorkspaceAdded += OnCurrentWorkspaceChanged;
+        }
 
-            this.mainMenu = new MenuItem()
-            {
-                Header = DiagnosticViewExtension.NAME
-            };
+        private void UnregisterEventHandlers()
+        {
+            this.dynamoModel.WorkspaceAdded -= OnCurrentWorkspaceChanged;
+        }
 
-            var launchToolkit = new MenuItem()
-            {
-                Header = "Launch",
-            };
+        private void OnCurrentWorkspaceChanged(IWorkspaceModel workspace)
+        {
+            if (this.CurrentSession != null)
+                this.CurrentSession.Dispose();
 
-            launchToolkit.Click += (sender, args) =>
-            {
-                DiagnosticMainView view = new DiagnosticMainView();
-                view.Show();
-            };
-
-            this.mainMenu.Items.Add(launchToolkit);
-            this.loadedParameters.dynamoMenu.Items.Add(this.mainMenu);
+            this.CurrentSession = new Session(workspace);
         }
 
         public void Dispose()
         {
-            
+            this.UnregisterEventHandlers();
         }
     }
 }
