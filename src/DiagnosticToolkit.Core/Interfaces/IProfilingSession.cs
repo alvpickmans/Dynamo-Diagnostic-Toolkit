@@ -10,5 +10,7 @@ namespace DiagnosticToolkit.Core.Interfaces
 
         event EventHandler SessionStarted;
         event EventHandler SessionEnded;
+        event EventHandler DataAdded;
+        event EventHandler DataRemoved;
     }
 }
