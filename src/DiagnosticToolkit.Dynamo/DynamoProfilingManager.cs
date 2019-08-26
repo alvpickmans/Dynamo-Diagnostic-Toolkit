@@ -21,16 +21,21 @@ namespace DiagnosticToolkit.Dynamo
         private DynamoViewModel dynamoVM { get; set; }
         private EngineController engineController { get; set; }
         public Session CurrentSession { get; private set; }
+        public bool IsEnabled { get; private set; }
 
-        public DynamoProfilingManager(ViewLoadedParams parameters)
+        public DynamoProfilingManager(ViewLoadedParams parameters, bool enableProfiling = false)
         {
             this.loadedParameters = parameters;
             this.dynamoVM = parameters.DynamoWindow.DataContext as DynamoViewModel;
             this.engineController = this.dynamoVM.EngineController;
 
             this.CurrentSession = new Session(parameters.CurrentWorkspaceModel);
-
             this.RegisterEventHandlers();
+
+            if (enableProfiling)
+                this.EnableProfiling();
+            else
+                this.DisableProfiling();
         }
 
         private void RegisterEventHandlers()
@@ -58,8 +63,6 @@ namespace DiagnosticToolkit.Dynamo
         private void OnGraphPreExecution(IExecutionSession session)
         {
             this.CurrentSession?.Start();
-
-            var keys = session.GetParameterKeys();
         }
 
         private void OnGraphPostExecution(IExecutionSession session)
@@ -76,17 +79,25 @@ namespace DiagnosticToolkit.Dynamo
 
         public void EnableProfiling()
         {
+            if (this.IsEnabled)
+                return;
+
             HomeWorkspaceModel workspace = this.CurrentSession != null
                 ? this.CurrentSession.Workspace as HomeWorkspaceModel
                 : this.loadedParameters.CurrentWorkspaceModel as HomeWorkspaceModel;
 
             this.engineController.EnableProfiling(true, workspace, workspace.Nodes);
+            this.IsEnabled = true;
         }
 
         public void DisableProfiling()
         {
+            if (!this.IsEnabled)
+                return;
+
             HomeWorkspaceModel workspace = this.loadedParameters.CurrentWorkspaceModel as HomeWorkspaceModel;
             this.engineController.EnableProfiling(false, workspace, new List<NodeModel>());
+            this.IsEnabled = false;
         }
     }
 }

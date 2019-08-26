@@ -61,7 +61,20 @@ namespace DiagnosticToolkit.Dynamo
                 view.Show();
             };
 
+            var enableCheckbox = new CheckBox() {
+                Content = "Profiling Enabled",
+                IsChecked = this.manager.IsEnabled
+            };
+            enableCheckbox.Click += (sender, arg) =>
+            {
+                if (sender is CheckBox check && check.IsChecked.Value)
+                    this.manager.EnableProfiling();
+                else
+                    this.manager.DisableProfiling();
+            };
+
             this.mainMenu.Items.Add(launchToolkit);
+            this.mainMenu.Items.Add(enableCheckbox);
             this.loadedParameters.dynamoMenu.Items.Add(this.mainMenu);
         }
 
