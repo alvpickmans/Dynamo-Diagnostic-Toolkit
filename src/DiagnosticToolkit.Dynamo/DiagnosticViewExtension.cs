@@ -1,4 +1,6 @@
 ﻿using DiagnosticToolkit.UI.Views;
+using Dynamo.Graph.Workspaces;
+using Dynamo.ViewModels;
 using Dynamo.Wpf.Extensions;
 using System;
 using System.Windows;

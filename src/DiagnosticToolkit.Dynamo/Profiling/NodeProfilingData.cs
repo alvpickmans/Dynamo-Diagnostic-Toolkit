@@ -12,6 +12,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
     {
         public TimeSpan ExecutionTime { get; private set; }
 
+        private DateTime startTime { get; set; }
+
         public NodeModel Node { get; private set; }
         public string NodeId => this.Node?.GUID.ToString();
 
@@ -41,17 +43,17 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
         private void OnNodeExecutionBegin(NodeModel obj)
         {
-            throw new NotImplementedException();
+            this.startTime = DateTime.Now;
         }
 
         private void OnNodeExecutoinEnd(NodeModel obj)
         {
-            throw new NotImplementedException();
+            this.ExecutionTime = DateTime.Now.Subtract(this.startTime);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            this.UnregisterEvents();
         }
     }
 }

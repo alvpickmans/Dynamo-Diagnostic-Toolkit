@@ -1,4 +1,5 @@
 ﻿using DiagnosticToolkit.Dynamo.Profiling;
+using Dynamo.Engine;
 using Dynamo.Events;
 using Dynamo.Graph.Workspaces;
 using Dynamo.Models;
@@ -14,14 +15,14 @@ namespace DiagnosticToolkit.Dynamo
     {
         private ViewLoadedParams loadedParameters { get; set; }
         private DynamoViewModel dynamoVM { get; set; }
-        private DynamoModel dynamoModel { get; set; }
+        private EngineController engineController { get; set; }
         public Session CurrentSession { get; private set; }
 
         public DynamoProfilingManager(ViewLoadedParams parameters)
         {
             this.loadedParameters = parameters;
             this.dynamoVM = parameters.DynamoWindow.DataContext as DynamoViewModel;
-            this.dynamoModel = this.dynamoVM.Model;
+            this.engineController = this.dynamoVM.EngineController;
 
             this.CurrentSession = new Session(parameters.CurrentWorkspaceModel);
 
@@ -30,25 +31,43 @@ namespace DiagnosticToolkit.Dynamo
 
         private void RegisterEventHandlers()
         {
-            this.dynamoModel.WorkspaceAdded += OnCurrentWorkspaceChanged;
+            this.loadedParameters.CurrentWorkspaceChanged += this.OnWorkspaceChanged;
+            ExecutionEvents.GraphPreExecution += OnGraphPreExecution;
+            ExecutionEvents.GraphPostExecution += OnGraphPostExecution;
+        }
+
+        private void OnWorkspaceChanged(IWorkspaceModel workspace)
+        {
+            if (this.CurrentSession == null || !this.CurrentSession.Workspace.Equals(workspace))
+            {
+                this.CurrentSession.Dispose();
+                this.CurrentSession = new Session(workspace);
+            }
         }
 
         private void UnregisterEventHandlers()
         {
-            this.dynamoModel.WorkspaceAdded -= OnCurrentWorkspaceChanged;
+            ExecutionEvents.GraphPreExecution -= OnGraphPreExecution;
+            ExecutionEvents.GraphPostExecution -= OnGraphPostExecution;
         }
 
-        private void OnCurrentWorkspaceChanged(IWorkspaceModel workspace)
+        private void OnGraphPreExecution(IExecutionSession session)
         {
-            if (this.CurrentSession != null)
-                this.CurrentSession.Dispose();
+            this.CurrentSession?.Start();
 
-            this.CurrentSession = new Session(workspace);
+            var keys = session.GetParameterKeys();
+        }
+
+        private void OnGraphPostExecution(IExecutionSession session)
+        {
+            this.CurrentSession.End();
         }
 
         public void Dispose()
         {
             this.UnregisterEventHandlers();
+
+            this.CurrentSession?.Dispose();
         }
     }
 }

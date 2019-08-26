@@ -1,4 +1,5 @@
 ﻿using DiagnosticToolkit.Core.Interfaces;
+using Dynamo.Engine;
 using Dynamo.Events;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
@@ -16,10 +17,10 @@ namespace DiagnosticToolkit.Dynamo.Profiling
     /// </summary>
     public class Session : IProfilingSession, IDisposable
     {
+        public Guid Guid { get; private set; }
         public TimeSpan ExecutionTime { get; private set; }
         public string Name => Workspace?.Name;
         public IWorkspaceModel Workspace { get; private set; }
-
         private Dictionary<Guid, NodeProfilingData> nodesData;
         private DateTime startTime;
 
@@ -29,21 +30,29 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         /// <param name="workspace"></param>
         public Session(IWorkspaceModel workspace)
         {
+            this.Guid = Guid.NewGuid();
             this.Workspace = workspace;
             this.nodesData = CollectNodeData(workspace);
             this.RegisterEventHandlers();
         }
 
-        private Session StartSession()
-        {
+        /// <summary>
+        /// Starts the profiling session.
+        /// </summary>
+        /// <returns></returns>
+        public Session Start()
+        {            
             this.startTime = DateTime.Now;
             return this;
         }
 
-        private Session EndSession()
+        /// <summary>
+        /// Ends the profiling session.
+        /// </summary>
+        /// <returns></returns>
+        public Session End()
         {
             this.ExecutionTime = DateTime.Now.Subtract(this.startTime);
-
             return this;
         }
 
@@ -57,16 +66,12 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         {
             this.Workspace.NodeAdded += OnNodeAdded;
             this.Workspace.NodeRemoved += OnNodeRemoved;
-            ExecutionEvents.GraphPreExecution += OnGraphPreExecution;
-            ExecutionEvents.GraphPostExecution += OnGraphPostExecution;
         }
 
         private void UnregisterEventHandlers()
         {
             this.Workspace.NodeAdded -= OnNodeAdded;
             this.Workspace.NodeRemoved -= OnNodeRemoved;
-            ExecutionEvents.GraphPreExecution -= OnGraphPreExecution;
-            ExecutionEvents.GraphPostExecution -= OnGraphPostExecution;
         }
 
         private void OnNodeAdded(NodeModel node)
@@ -85,34 +90,23 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.OnDataRemoved(null);
         }
 
-        private void OnGraphPreExecution(IExecutionSession session)
-        {
-            this.StartSession();
-        }
-
-        private void OnGraphPostExecution(IExecutionSession session)
-        {
-            this.EndSession();
-        }
-
         public void Dispose()
         {
             UnregisterEventHandlers();
         }
 
+        #region Events
         public event EventHandler SessionStarted;
+        protected void OnSessionStarted(EventArgs e) => SessionStarted?.Invoke(this, e);
+
         public event EventHandler SessionEnded;
+        protected void OnSessionEnded(EventArgs e) => SessionEnded?.Invoke(this, e);
 
         public event EventHandler DataAdded;
-        protected void OnDataAdded(EventArgs e)
-        {
-            DataAdded?.Invoke(this, e);
-        }
+        protected void OnDataAdded(EventArgs e) => DataAdded?.Invoke(this, e);
 
         public event EventHandler DataRemoved;
-        protected void OnDataRemoved(EventArgs e)
-        {
-            DataRemoved?.Invoke(this, e);
-        }
+        protected void OnDataRemoved(EventArgs e) => DataRemoved?.Invoke(this, e);
+        #endregion
     }
 }
