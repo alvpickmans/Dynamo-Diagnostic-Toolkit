@@ -1,17 +1,21 @@
-﻿using DiagnosticToolkit.Dynamo.Profiling;
+﻿using DiagnosticToolkit.Core.Interfaces;
+using DiagnosticToolkit.Dynamo.Profiling;
 using Dynamo.Engine;
 using Dynamo.Events;
+using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
 using Dynamo.Models;
 using Dynamo.Session;
 using Dynamo.ViewModels;
 using Dynamo.Wpf.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 
 namespace DiagnosticToolkit.Dynamo
 {
-    public class DynamoProfilingManager : IDisposable
+    public class DynamoProfilingManager : IProfilingManager<Session>, IDisposable
     {
         private ViewLoadedParams loadedParameters { get; set; }
         private DynamoViewModel dynamoVM { get; set; }
@@ -68,6 +72,21 @@ namespace DiagnosticToolkit.Dynamo
             this.UnregisterEventHandlers();
 
             this.CurrentSession?.Dispose();
+        }
+
+        public void EnableProfiling()
+        {
+            HomeWorkspaceModel workspace = this.CurrentSession != null
+                ? this.CurrentSession.Workspace as HomeWorkspaceModel
+                : this.loadedParameters.CurrentWorkspaceModel as HomeWorkspaceModel;
+
+            this.engineController.EnableProfiling(true, workspace, workspace.Nodes);
+        }
+
+        public void DisableProfiling()
+        {
+            HomeWorkspaceModel workspace = this.loadedParameters.CurrentWorkspaceModel as HomeWorkspaceModel;
+            this.engineController.EnableProfiling(false, workspace, new List<NodeModel>());
         }
     }
 }
