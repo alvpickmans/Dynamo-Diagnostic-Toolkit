@@ -15,7 +15,7 @@ using System.Windows.Controls;
 
 namespace DiagnosticToolkit.Dynamo
 {
-    public class DynamoProfilingManager : IProfilingManager<Session>, IDisposable
+    public class DynamoProfilingManager : IProfilingManager<Session, NodeProfilingData>, IDisposable
     {
         private ViewLoadedParams loadedParameters { get; set; }
         private DynamoViewModel dynamoVM { get; set; }

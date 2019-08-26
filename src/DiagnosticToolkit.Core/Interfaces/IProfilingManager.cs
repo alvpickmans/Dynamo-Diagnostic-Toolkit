@@ -4,7 +4,9 @@ using System.Text;
 
 namespace DiagnosticToolkit.Core.Interfaces
 {
-    public interface IProfilingManager<TSession> where TSession : IProfilingSession
+    public interface IProfilingManager<TSession, TData>
+        where TSession : IProfilingSession<TData>
+        where TData : IProfilingData
     {
         /// <summary>
         /// Current Profiling session.
