@@ -52,10 +52,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="DynamoCore">
-      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoCore.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />

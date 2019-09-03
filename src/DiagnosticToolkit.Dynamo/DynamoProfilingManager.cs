@@ -29,45 +29,76 @@ namespace DiagnosticToolkit.Dynamo
             this.dynamoVM = parameters.DynamoWindow.DataContext as DynamoViewModel;
             this.engineController = this.dynamoVM.EngineController;
 
-            this.CurrentSession = new Session(parameters.CurrentWorkspaceModel);
             this.RegisterEventHandlers();
-
-            if (enableProfiling)
-                this.EnableProfiling();
-            else
-                this.DisableProfiling();
+            this.OnWorkspaceChanged(this.loadedParameters.CurrentWorkspaceModel);
         }
 
         private void RegisterEventHandlers()
         {
-            this.loadedParameters.CurrentWorkspaceChanged += this.OnWorkspaceChanged;
-            ExecutionEvents.GraphPreExecution += OnGraphPreExecution;
-            ExecutionEvents.GraphPostExecution += OnGraphPostExecution;
+            this.dynamoVM.Model.WorkspaceHidden += this.OnWorkspaceHidden;
+            this.loadedParameters.CurrentWorkspaceChanged += OnWorkspaceChanged;
+        }
+
+
+        private void UnregisterEventHandlers()
+        {
+            this.dynamoVM.Model.WorkspaceHidden -= this.OnWorkspaceHidden;
+            this.loadedParameters.CurrentWorkspaceChanged -= OnWorkspaceChanged;
+        }
+        private void OnWorkspaceHidden(WorkspaceModel workspace)
+        {
+            if (workspace is HomeWorkspaceModel homeWorkspace)
+            {
+                homeWorkspace.EvaluationStarted -= OnEvaluationStarted;
+                homeWorkspace.EvaluationCompleted -= this.OnEvaluationCompleted;
+            }
         }
 
         private void OnWorkspaceChanged(IWorkspaceModel workspace)
         {
-            if (this.CurrentSession == null || !this.CurrentSession.Workspace.Equals(workspace))
-            {
+            if (this.CurrentSession != null && !this.CurrentSession.Workspace.Equals(workspace))
                 this.CurrentSession.Dispose();
-                this.CurrentSession = new Session(workspace);
+
+            this.CurrentSession = new Session(workspace);
+
+            if (workspace is HomeWorkspaceModel homeWorkspace)
+            {
+                homeWorkspace.EvaluationStarted += OnEvaluationStarted;
+                homeWorkspace.EvaluationCompleted += this.OnEvaluationCompleted;
             }
         }
 
-        private void UnregisterEventHandlers()
+        private void OnEvaluationStarted(object sender, EventArgs e)
         {
-            ExecutionEvents.GraphPreExecution -= OnGraphPreExecution;
-            ExecutionEvents.GraphPostExecution -= OnGraphPostExecution;
+            HomeWorkspaceModel workspace = sender as HomeWorkspaceModel;
+            if (workspace == null)
+                return;
+
+            if (!this.CurrentSession.Workspace.Equals(workspace))
+                this.OnWorkspaceChanged(workspace);
+
+            if(!this.engineController.Equals(workspace.EngineController))
+                this.ResetEngineController(workspace.EngineController, this.IsEnabled);
+
+            if (this.IsEnabled)
+                this.CurrentSession?.Start();
         }
 
-        private void OnGraphPreExecution(IExecutionSession session)
+        private void OnEvaluationCompleted(object sender, EvaluationCompletedEventArgs e)
         {
-            this.CurrentSession?.Start();
+            if (this.IsEnabled)
+                this.CurrentSession.End();
         }
 
-        private void OnGraphPostExecution(IExecutionSession session)
+        private void ResetEngineController(EngineController engineController, bool enableProfiling)
         {
-            this.CurrentSession.End();
+            this.DisableProfiling();
+
+            this.engineController = engineController;
+
+            if (enableProfiling)
+                this.EnableProfiling();
+
         }
 
         public void Dispose()

@@ -29,7 +29,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
                 return;
 
             this.Node.NodeExecutionBegin += this.OnNodeExecutionBegin;
-            this.Node.NodeExecutionEnd += this.OnNodeExecutoinEnd;
+            this.Node.NodeExecutionEnd += this.OnNodeExecutionEnd;
         }
 
         private void UnregisterEvents()
@@ -38,7 +38,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
                 return;
 
             this.Node.NodeExecutionBegin -= this.OnNodeExecutionBegin;
-            this.Node.NodeExecutionEnd -= this.OnNodeExecutoinEnd;
+            this.Node.NodeExecutionEnd -= this.OnNodeExecutionEnd;
         }
 
         private void OnNodeExecutionBegin(NodeModel obj)
@@ -46,7 +46,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.startTime = DateTime.Now;
         }
 
-        private void OnNodeExecutoinEnd(NodeModel obj)
+        private void OnNodeExecutionEnd(NodeModel obj)
         {
             this.ExecutionTime = DateTime.Now.Subtract(this.startTime);
         }
