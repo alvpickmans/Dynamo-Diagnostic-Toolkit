@@ -30,7 +30,6 @@ namespace DiagnosticToolkit.Dynamo
             this.engineController = this.dynamoVM.EngineController;
 
             this.RegisterEventHandlers();
-            //this.OnWorkspaceChanged(this.loadedParameters.CurrentWorkspaceModel);
         }
 
         private void RegisterEventHandlers()
@@ -42,8 +41,19 @@ namespace DiagnosticToolkit.Dynamo
 
         private void OnWorkspaceCleared(WorkspaceModel workspace)
         {
-            if (this.CurrentSession != null && this.CurrentSession.Workspace.Equals(workspace))
+            // This happens when a new file is opened from start page
+            if (this.CurrentSession == null)
+                this.CurrentSession = new Session(workspace);
+
+            // This happens when a file is closed or a new empty file is opened
+            else if (this.CurrentSession.Workspace.Equals(workspace))
+            {
+                // When an saved file is closed, the CurrentWorkspace keeps its Name.
+                if (String.IsNullOrWhiteSpace(workspace.FileName))
+                    workspace.Name = "Home";
+
                 this.CurrentSession.Clear();
+            }
         }
 
         private void UnregisterEventHandlers()
