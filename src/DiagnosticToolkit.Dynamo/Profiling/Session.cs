@@ -15,14 +15,14 @@ namespace DiagnosticToolkit.Dynamo.Profiling
     /// <summary>
     /// Profiling session for a Dynamo Graph.
     /// </summary>
-    public class Session : IProfilingSession<NodeProfilingData>, IDisposable
+    public class Session : IProfilingSession, IDisposable
     {
         public Guid Guid { get; private set; }
         public TimeSpan ExecutionTime { get; private set; }
         public string Name => Workspace?.Name;
 
         private Dictionary<Guid, NodeProfilingData> nodesData;
-        public IEnumerable<NodeProfilingData> ProfilingData => nodesData?.Values;
+        public IEnumerable<IProfilingData> ProfilingData => nodesData?.Values;
 
         public IWorkspaceModel Workspace { get; private set; }
         private DateTime? startTime;

@@ -4,12 +4,12 @@ using System.Text;
 
 namespace DiagnosticToolkit.Core.Interfaces
 {
-    public interface IProfilingSession<TData> where TData : IProfilingData
+    public interface IProfilingSession
     {
         Guid Guid { get; }
         TimeSpan ExecutionTime { get; }
         string Name { get; }
-        IEnumerable<TData> ProfilingData { get; }
+        IEnumerable<IProfilingData> ProfilingData { get; }
         bool Executing { get; }
 
         event EventHandler SessionStarted;

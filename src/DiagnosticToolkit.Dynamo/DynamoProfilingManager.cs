@@ -15,12 +15,14 @@ using System.Windows.Controls;
 
 namespace DiagnosticToolkit.Dynamo
 {
-    public class DynamoProfilingManager : IProfilingManager<Session, NodeProfilingData>, IDisposable
+    public class DynamoProfilingManager : IProfilingManager, IDisposable
     {
         private ViewLoadedParams loadedParameters { get; set; }
         private DynamoViewModel dynamoVM { get; set; }
         private EngineController engineController { get; set; }
-        public Session CurrentSession { get; private set; }
+
+        private Session dynamoSession { get; set; }
+        public IProfilingSession CurrentSession => this.dynamoSession;
         public bool IsEnabled { get; private set; }
 
         public DynamoProfilingManager(ViewLoadedParams parameters, bool enableProfiling = false)
@@ -42,17 +44,17 @@ namespace DiagnosticToolkit.Dynamo
         private void OnWorkspaceCleared(WorkspaceModel workspace)
         {
             // This happens when a new file is opened from start page
-            if (this.CurrentSession == null)
-                this.CurrentSession = new Session(workspace);
+            if (this.dynamoSession == null)
+                this.dynamoSession = new Session(workspace);
 
             // This happens when a file is closed or a new empty file is opened
-            else if (this.CurrentSession.Workspace.Equals(workspace))
+            else if (this.dynamoSession.Workspace.Equals(workspace))
             {
                 // When an saved file is closed, the CurrentWorkspace keeps its Name.
                 if (String.IsNullOrWhiteSpace(workspace.FileName))
                     workspace.Name = "Home";
 
-                this.CurrentSession.Clear();
+                this.dynamoSession.Clear();
             }
         }
 
@@ -72,13 +74,13 @@ namespace DiagnosticToolkit.Dynamo
 
         private void OnWorkspaceChanged(IWorkspaceModel workspace)
         {
-            if (this.CurrentSession != null && this.CurrentSession.Workspace.Equals(workspace))
+            if (this.dynamoSession != null && this.dynamoSession.Workspace.Equals(workspace))
                 return;
 
-            if (this.CurrentSession != null && !this.CurrentSession.Workspace.Equals(workspace))
-                this.CurrentSession.Dispose();
+            if (this.dynamoSession != null && !this.dynamoSession.Workspace.Equals(workspace))
+                this.dynamoSession.Dispose();
 
-            this.CurrentSession = new Session(workspace);
+            this.dynamoSession = new Session(workspace);
 
             if (workspace is HomeWorkspaceModel homeWorkspace)
             {
@@ -93,20 +95,20 @@ namespace DiagnosticToolkit.Dynamo
             if (workspace == null)
                 return;
 
-            if (!this.CurrentSession.Workspace.Equals(workspace))
+            if (!this.dynamoSession.Workspace.Equals(workspace))
                 this.OnWorkspaceChanged(workspace);
 
             if(!this.engineController.Equals(workspace.EngineController))
                 this.ResetEngineController(workspace.EngineController, this.IsEnabled);
 
             if (this.IsEnabled)
-                this.CurrentSession?.Start();
+                this.dynamoSession?.Start();
         }
 
         private void OnEvaluationCompleted(object sender, EvaluationCompletedEventArgs e)
         {
             if (this.IsEnabled)
-                this.CurrentSession.End();
+                this.dynamoSession.End();
         }
 
         private void ResetEngineController(EngineController engineController, bool enableProfiling)
@@ -124,7 +126,7 @@ namespace DiagnosticToolkit.Dynamo
         {
             this.UnregisterEventHandlers();
 
-            this.CurrentSession?.Dispose();
+            this.dynamoSession?.Dispose();
         }
 
         public void EnableProfiling()
@@ -132,8 +134,8 @@ namespace DiagnosticToolkit.Dynamo
             if (this.IsEnabled)
                 return;
 
-            HomeWorkspaceModel workspace = this.CurrentSession != null
-                ? this.CurrentSession.Workspace as HomeWorkspaceModel
+            HomeWorkspaceModel workspace = this.dynamoSession != null
+                ? this.dynamoSession.Workspace as HomeWorkspaceModel
                 : this.loadedParameters.CurrentWorkspaceModel as HomeWorkspaceModel;
 
             this.engineController.EnableProfiling(true, workspace, workspace.Nodes);

@@ -4,14 +4,12 @@ using System.Text;
 
 namespace DiagnosticToolkit.Core.Interfaces
 {
-    public interface IProfilingManager<TSession, TData>
-        where TSession : IProfilingSession<TData>
-        where TData : IProfilingData
+    public interface IProfilingManager
     {
         /// <summary>
         /// Current Profiling session.
         /// </summary>
-        TSession CurrentSession { get; }
+        IProfilingSession CurrentSession { get; }
 
         /// <summary>
         /// Enable profiling.
