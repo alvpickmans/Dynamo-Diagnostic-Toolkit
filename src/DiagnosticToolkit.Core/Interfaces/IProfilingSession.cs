@@ -10,6 +10,7 @@ namespace DiagnosticToolkit.Core.Interfaces
         TimeSpan ExecutionTime { get; }
         string Name { get; }
         IEnumerable<TData> ProfilingData { get; }
+        bool Executing { get; }
 
         event EventHandler SessionStarted;
         event EventHandler SessionEnded;

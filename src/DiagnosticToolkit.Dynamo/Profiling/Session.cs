@@ -20,10 +20,14 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public Guid Guid { get; private set; }
         public TimeSpan ExecutionTime { get; private set; }
         public string Name => Workspace?.Name;
-        public IEnumerable<NodeProfilingData> ProfilingData => nodesData?.Values;
-        public IWorkspaceModel Workspace { get; private set; }
+
         private Dictionary<Guid, NodeProfilingData> nodesData;
-        private DateTime startTime;
+        public IEnumerable<NodeProfilingData> ProfilingData => nodesData?.Values;
+
+        public IWorkspaceModel Workspace { get; private set; }
+        private DateTime? startTime;
+        public bool Executing => startTime.HasValue;
+
 
         /// <summary>
         /// Creates a new instance of Dynamo Profiling Session
@@ -53,8 +57,17 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         /// <returns></returns>
         public Session End()
         {
-            this.ExecutionTime = DateTime.Now.Subtract(this.startTime);
+            if (this.Executing)
+            {
+                this.ExecutionTime = DateTime.Now.Subtract(this.startTime.Value);
+                this.startTime = null;
+            }
             return this;
+        }
+
+        public void Clear()
+        {
+            this.nodesData.Clear();
         }
 
         private static Dictionary<Guid, NodeProfilingData> CollectNodeData(IWorkspaceModel workspace)

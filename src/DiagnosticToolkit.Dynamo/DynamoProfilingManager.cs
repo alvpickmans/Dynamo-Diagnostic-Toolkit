@@ -30,15 +30,21 @@ namespace DiagnosticToolkit.Dynamo
             this.engineController = this.dynamoVM.EngineController;
 
             this.RegisterEventHandlers();
-            this.OnWorkspaceChanged(this.loadedParameters.CurrentWorkspaceModel);
+            //this.OnWorkspaceChanged(this.loadedParameters.CurrentWorkspaceModel);
         }
 
         private void RegisterEventHandlers()
         {
             this.dynamoVM.Model.WorkspaceHidden += this.OnWorkspaceHidden;
+            this.dynamoVM.Model.WorkspaceCleared += this.OnWorkspaceCleared;
             this.loadedParameters.CurrentWorkspaceChanged += OnWorkspaceChanged;
         }
 
+        private void OnWorkspaceCleared(WorkspaceModel workspace)
+        {
+            if (this.CurrentSession != null && this.CurrentSession.Workspace.Equals(workspace))
+                this.CurrentSession.Clear();
+        }
 
         private void UnregisterEventHandlers()
         {
@@ -56,6 +62,9 @@ namespace DiagnosticToolkit.Dynamo
 
         private void OnWorkspaceChanged(IWorkspaceModel workspace)
         {
+            if (this.CurrentSession != null && this.CurrentSession.Workspace.Equals(workspace))
+                return;
+
             if (this.CurrentSession != null && !this.CurrentSession.Workspace.Equals(workspace))
                 this.CurrentSession.Dispose();
 
