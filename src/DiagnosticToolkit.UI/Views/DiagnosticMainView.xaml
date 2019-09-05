@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <Grid>
-        <lvc:CartesianChart/>
+        <lvc:CartesianChart Series="{Binding NodeProfilingData}"/>
 
     </Grid>
 </controls:MetroWindow>

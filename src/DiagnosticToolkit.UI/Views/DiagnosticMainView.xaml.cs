@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DiagnosticToolkit.UI.ViewModels;
 using MahApps.Metro.Controls;
 
 namespace DiagnosticToolkit.UI.Views
@@ -21,9 +22,18 @@ namespace DiagnosticToolkit.UI.Views
     /// </summary>
     public partial class DiagnosticMainView : MetroWindow
     {
-        public DiagnosticMainView()
+        DiagnosticMainViewModel viewModel;
+        public DiagnosticMainView(DiagnosticMainViewModel viewModel)
         {
             InitializeComponent();
+            this.viewModel = viewModel;
+            this.DataContext = this.viewModel;
+
+            this.Closed += (sender, arg) =>
+            {
+                this.DataContext = null;
+                this.viewModel.Dispose();
+            };
         }
     }
 }

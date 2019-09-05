@@ -1,4 +1,5 @@
-﻿using DiagnosticToolkit.UI.Views;
+﻿using DiagnosticToolkit.UI.ViewModels;
+using DiagnosticToolkit.UI.Views;
 using Dynamo.Graph.Workspaces;
 using Dynamo.ViewModels;
 using Dynamo.Wpf.Extensions;
@@ -57,7 +58,8 @@ namespace DiagnosticToolkit.Dynamo
 
             launchToolkit.Click += (sender, args) =>
             {
-                DiagnosticMainView view = new DiagnosticMainView();
+                DiagnosticMainViewModel viewModel = new DiagnosticMainViewModel(this.manager);
+                DiagnosticMainView view = new DiagnosticMainView(viewModel);
                 view.Show();
             };
 

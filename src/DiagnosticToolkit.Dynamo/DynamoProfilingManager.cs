@@ -36,14 +36,6 @@ namespace DiagnosticToolkit.Dynamo
 
         private void OnSessionChanged(IProfilingSession session) => this.SessionChanged?.Invoke(session);
 
-        public event Action ProfilingStarted;
-
-        private void OnProfilingStarted() => this.ProfilingStarted?.Invoke();
-
-        public event Action ProfilingEnded;
-
-        private void OnProfilingEnded() => this.ProfilingEnded?.Invoke();
-
         #endregion Manager Events
 
         private void RegisterEventHandlers()
@@ -58,11 +50,36 @@ namespace DiagnosticToolkit.Dynamo
             this.dynamoVM.Model.WorkspaceHidden -= this.OnWorkspaceHidden;
             this.loadedParameters.CurrentWorkspaceChanged -= OnWorkspaceChanged;
         }
+
+        private void RegisterWorkspaceEvents(IWorkspaceModel workspace)
+        {
+            if (workspace is HomeWorkspaceModel homeWorkspace)
+            {
+                homeWorkspace.EvaluationStarted += this.OnEvaluationStarted;
+                homeWorkspace.EvaluationCompleted += this.OnEvaluationCompleted;
+            }
+        }
+
+        private void UnregisterWorkspaceEvents(IWorkspaceModel workspace)
+        {
+            if (workspace is HomeWorkspaceModel homeWorkspace)
+            {
+                homeWorkspace.EvaluationStarted -= this.OnEvaluationStarted;
+                homeWorkspace.EvaluationCompleted -= this.OnEvaluationCompleted;
+            }
+        }
         private Session SetCurrentSession(IWorkspaceModel workspace)
         {
-            this.dynamoSession = new Session(workspace);
-            this.OnSessionChanged(this.CurrentSession);
+            if(this.dynamoSession != null)
+            {
+                this.UnregisterWorkspaceEvents(this.dynamoSession.Workspace);
+                this.dynamoSession.Dispose();
+            }
 
+            this.dynamoSession = new Session(workspace);
+            this.RegisterWorkspaceEvents(this.dynamoSession.Workspace);
+
+            this.OnSessionChanged(this.CurrentSession);
             return this.dynamoSession;
         }
         private void OnWorkspaceCleared(WorkspaceModel workspace)
@@ -100,12 +117,6 @@ namespace DiagnosticToolkit.Dynamo
                 this.dynamoSession.Dispose();
 
             this.SetCurrentSession(workspace);
-
-            if (workspace is HomeWorkspaceModel homeWorkspace)
-            {
-                homeWorkspace.EvaluationStarted += this.OnEvaluationStarted;
-                homeWorkspace.EvaluationCompleted += this.OnEvaluationCompleted;
-            }
         }
 
         private void OnEvaluationStarted(object sender, EventArgs e)
