@@ -72,6 +72,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public void Clear()
         {
             this.nodesData.Clear();
+
+            this.OnSessionCleared(EventArgs.Empty);
         }
 
         private static Dictionary<Guid, NodeProfilingData> CollectNodeData(IWorkspaceModel workspace)
@@ -120,6 +122,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
         public event EventHandler SessionEnded;
         protected void OnSessionEnded(EventArgs e) => SessionEnded?.Invoke(this, e);
+
+        public event EventHandler SessionCleared;
+        protected void OnSessionCleared(EventArgs e) => SessionCleared?.Invoke(this, e);
 
         public event Action<IProfilingData> DataAdded;
         protected void OnDataAdded(IProfilingData data) => DataAdded?.Invoke(data);
