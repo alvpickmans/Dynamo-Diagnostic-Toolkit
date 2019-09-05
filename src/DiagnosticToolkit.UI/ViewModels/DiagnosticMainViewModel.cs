@@ -61,9 +61,11 @@ namespace DiagnosticToolkit.UI.ViewModels
 
             this.session.SessionStarted += this.OnSessionStarted;
             this.session.SessionEnded += this.OnSessionEnded;
+            this.session.SessionCleared += this.OnSessionCleared;
             this.session.DataAdded += this.OnDataAdded;
             this.session.DataRemoved += this.OnDataRemoved;
         }
+
 
         private void UnregisterSessionEvents(IProfilingSession session)
         {
@@ -72,6 +74,7 @@ namespace DiagnosticToolkit.UI.ViewModels
 
             this.session.SessionStarted -= this.OnSessionStarted;
             this.session.SessionEnded -= this.OnSessionEnded;
+            this.session.SessionCleared -= this.OnSessionCleared;
             this.session.DataAdded -= this.OnDataAdded;
             this.session.DataRemoved -= this.OnDataRemoved;
         }
@@ -92,6 +95,11 @@ namespace DiagnosticToolkit.UI.ViewModels
         private void OnSessionStarted(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
+        }
+
+        private void OnSessionCleared(object sender, EventArgs e)
+        {
+            this.NodeProfilingData.Clear();
         }
 
         private void OnSessionEnded(object sender, EventArgs e)
