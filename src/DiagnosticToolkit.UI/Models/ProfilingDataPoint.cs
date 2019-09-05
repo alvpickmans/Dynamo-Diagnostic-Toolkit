@@ -9,29 +9,31 @@ using System.Threading.Tasks;
 
 namespace DiagnosticToolkit.UI.Models
 {
-    public class ProfilingDataPoint : ScatterPoint
+    public class ProfilingDataPoint : ScatterPoint, IObservableChartPoint
     {
         public IProfilingData Instance { get; private set; }
 
-        public ProfilingDataPoint(IProfilingData profilingData)
+        public ProfilingDataPoint(IProfilingData profilingData) : base(profilingData.X, profilingData.Y)
         {
             this.Instance = profilingData;
-            this.X = profilingData.X;
-            this.Y = profilingData.Y;
-            this.Weight = profilingData.ExecutionTime.TotalMilliseconds;
-
             this.Instance.PositionChanged += this.OnPositionChanged;
         }
+
+        public event Action PointChanged;
+        private void OnPointChanged() => PointChanged?.Invoke();
 
         public void UpdateWeight()
         {
             this.Weight = this.Instance.ExecutionTime.TotalMilliseconds;
+            this.OnPointChanged();
         }
 
         private void OnPositionChanged(IProfilingData data)
         {
             this.X = data.X;
             this.Y = data.Y;
+
+            this.OnPointChanged();
         }
 
     }

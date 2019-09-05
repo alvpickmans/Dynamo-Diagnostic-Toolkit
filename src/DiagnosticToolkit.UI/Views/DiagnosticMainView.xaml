@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:lvcMappers="clr-namespace:DiagnosticToolkit.UI.Models"
              xmlns:local="clr-namespace:DiagnosticToolkit.UI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -17,9 +18,9 @@
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <Grid>
-        <lvc:CartesianChart >
+        <lvc:CartesianChart>
             <lvc:CartesianChart.Series>
-                <lvc:ScatterSeries Values="{Binding NodeProfilingData}" MinPointShapeDiameter="2" MaxPointShapeDiameter="50"/>
+                <lvc:ScatterSeries Values="{Binding NodeProfilingData}" MinPointShapeDiameter="1" MaxPointShapeDiameter="50"/>
             </lvc:CartesianChart.Series>
         </lvc:CartesianChart>
 

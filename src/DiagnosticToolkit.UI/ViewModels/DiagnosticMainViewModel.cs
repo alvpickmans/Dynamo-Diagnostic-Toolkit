@@ -24,12 +24,14 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public string SessionName { get; set; }
 
-        public NoisyCollection<ProfilingDataPoint> NodeProfilingData { get; private set; }
+        public ChartValues<ProfilingDataPoint> NodeProfilingData { get; private set; }
 
         public DiagnosticMainViewModel(IProfilingManager manager)
         {
             this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            this.NodeProfilingData = new NoisyCollection<ProfilingDataPoint>();
+            this.NodeProfilingData = new ChartValues<ProfilingDataPoint>();
+
+            Charting.For<ProfilingDataPoint>(ChartMappers.ProfilingDataPointMapper);
 
             this.RegisterSession(this.manager.CurrentSession);
             this.RegisterEvents();
@@ -82,7 +84,7 @@ namespace DiagnosticToolkit.UI.ViewModels
             if (this.session != null && this.session.ProfilingData.Any())
             {
                 var dataPoints = this.session.ProfilingData.Select(data => new ProfilingDataPoint(data));
-                this.NodeProfilingData = new NoisyCollection<ProfilingDataPoint>(dataPoints);
+                this.NodeProfilingData = new ChartValues<ProfilingDataPoint>(dataPoints);
             }
 
             this.RegisterSessionEvents(this.session);
