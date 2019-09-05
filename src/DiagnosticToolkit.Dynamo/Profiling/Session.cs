@@ -48,6 +48,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public Session Start()
         {            
             this.startTime = DateTime.Now;
+
+            this.OnSessionStarted(EventArgs.Empty);
             return this;
         }
 
@@ -62,6 +64,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
                 this.ExecutionTime = DateTime.Now.Subtract(this.startTime.Value);
                 this.startTime = null;
             }
+
+            this.OnSessionEnded(EventArgs.Empty);
             return this;
         }
 
@@ -90,8 +94,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
         private void OnNodeAdded(NodeModel node)
         {
-            nodesData.Add(node.GUID, new NodeProfilingData(node));
-            OnDataAdded(null);
+            var data = new NodeProfilingData(node);
+            nodesData.Add(node.GUID, data);
+            this.OnDataAdded(data);
         }
 
         private void OnNodeRemoved(NodeModel node)
@@ -101,7 +106,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
             data.Dispose();
             nodesData.Remove(node.GUID);
-            this.OnDataRemoved(null);
+            this.OnDataRemoved(data);
         }
 
         public void Dispose()
@@ -116,11 +121,11 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public event EventHandler SessionEnded;
         protected void OnSessionEnded(EventArgs e) => SessionEnded?.Invoke(this, e);
 
-        public event EventHandler DataAdded;
-        protected void OnDataAdded(EventArgs e) => DataAdded?.Invoke(this, e);
+        public event Action<IProfilingData> DataAdded;
+        protected void OnDataAdded(IProfilingData data) => DataAdded?.Invoke(data);
 
-        public event EventHandler DataRemoved;
-        protected void OnDataRemoved(EventArgs e) => DataRemoved?.Invoke(this, e);
+        public event Action<IProfilingData> DataRemoved;
+        protected void OnDataRemoved(IProfilingData data) => DataRemoved?.Invoke(data);
         #endregion
     }
 }
