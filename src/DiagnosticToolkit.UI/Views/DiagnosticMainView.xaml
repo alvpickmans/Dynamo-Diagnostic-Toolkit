@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <Grid>
-        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Work In Progress" VerticalAlignment="Center"/>
+        <lvc:CartesianChart/>
 
     </Grid>
 </controls:MetroWindow>

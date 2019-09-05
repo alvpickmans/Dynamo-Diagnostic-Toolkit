@@ -20,5 +20,9 @@ namespace DiagnosticToolkit.Core.Interfaces
         /// Disable profiling.
         /// </summary>
         void DisableProfiling();
+
+        event Action<IProfilingSession> SessionChanged;
+        event Action ProfilingStarted;
+        event Action ProfilingEnded;
     }
 }
