@@ -32,8 +32,16 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.X = position.X;
             // Dynamo considers the Y axis positive to be from top to bottom
             this.Y = position.Y * -1;
+
+            this.OnPositionChanged(this);
         }
 
+        #region ProfilingData Events
+        public event Action<IProfilingData> PositionChanged;
+        private void OnPositionChanged(IProfilingData data) => this.PositionChanged?.Invoke(data);
+        #endregion
+
+        #region Dynamo Events
         private void RegisterEvents()
         {
             if (this.Node == null)
@@ -69,7 +77,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
                 return;
 
             this.UpdatePosition(this.Node.Position);
-        }
+        } 
+        #endregion
 
         public void Dispose()
         {

@@ -63,9 +63,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             {
                 this.ExecutionTime = DateTime.Now.Subtract(this.startTime.Value);
                 this.startTime = null;
+                this.OnSessionEnded(EventArgs.Empty);
             }
 
-            this.OnSessionEnded(EventArgs.Empty);
             return this;
         }
 

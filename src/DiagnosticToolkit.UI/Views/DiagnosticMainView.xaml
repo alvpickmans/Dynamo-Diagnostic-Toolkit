@@ -17,7 +17,11 @@
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <Grid>
-        <lvc:CartesianChart Series="{Binding NodeProfilingData}"/>
+        <lvc:CartesianChart >
+            <lvc:CartesianChart.Series>
+                <lvc:ScatterSeries Values="{Binding NodeProfilingData}" MinPointShapeDiameter="2" MaxPointShapeDiameter="50"/>
+            </lvc:CartesianChart.Series>
+        </lvc:CartesianChart>
 
     </Grid>
 </controls:MetroWindow>

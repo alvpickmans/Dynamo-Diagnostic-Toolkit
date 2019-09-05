@@ -10,5 +10,7 @@ namespace DiagnosticToolkit.Core.Interfaces
 
         double X { get; }
         double Y { get; }
+
+        event Action<IProfilingData> PositionChanged;
     }
 }
