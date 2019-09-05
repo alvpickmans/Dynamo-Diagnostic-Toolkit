@@ -1,5 +1,6 @@
 ﻿using DiagnosticToolkit.Core.Interfaces;
 using Dynamo.Graph.Nodes;
+using Dynamo.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
     {
         public TimeSpan ExecutionTime { get; private set; }
 
+        public double X { get; private set; }
+        public double Y { get; private set; }
+
         private DateTime startTime { get; set; }
 
         public NodeModel Node { get; private set; }
@@ -23,6 +27,13 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.RegisterEvents();
         }
 
+        private void UpdatePosition(Point2D position)
+        {
+            this.X = position.X;
+            // Dynamo considers the Y axis positive to be from top to bottom
+            this.Y = position.Y * -1;
+        }
+
         private void RegisterEvents()
         {
             if (this.Node == null)
@@ -30,6 +41,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
             this.Node.NodeExecutionBegin += this.OnNodeExecutionBegin;
             this.Node.NodeExecutionEnd += this.OnNodeExecutionEnd;
+            this.Node.PropertyChanged += this.OnNodePropertyChanged;
         }
 
         private void UnregisterEvents()
@@ -49,6 +61,14 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         private void OnNodeExecutionEnd(NodeModel obj)
         {
             this.ExecutionTime = DateTime.Now.Subtract(this.startTime);
+        }
+
+        private void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(NodeModel.Position))
+                return;
+
+            this.UpdatePosition(this.Node.Position);
         }
 
         public void Dispose()
