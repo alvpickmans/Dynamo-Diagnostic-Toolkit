@@ -31,7 +31,6 @@ namespace DiagnosticToolkit.UI.Views
 
             this.Closed += (sender, arg) =>
             {
-                this.DataContext = null;
                 this.viewModel.Dispose();
             };
         }

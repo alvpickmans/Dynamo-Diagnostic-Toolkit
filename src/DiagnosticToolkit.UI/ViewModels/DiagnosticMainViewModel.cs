@@ -9,7 +9,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Data;
 using System.Windows.Threading;
+using PropertyChanged;
+using LiveCharts.Configurations;
 
 namespace DiagnosticToolkit.UI.ViewModels
 {
@@ -24,22 +27,48 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public string SessionName { get; set; }
 
+        [AlsoNotifyFor(nameof(NodeProfilingData))]
+        public double MinimumExecutionTime { get; set; }
+
+        [AlsoNotifyFor(nameof(NodeProfilingData))]
+        public double MaximumExecutionTime { get; set; }
+
+        [AlsoNotifyFor(nameof(NodeProfilingData))]
+        public double LowerTimeRange { get; set; }
+
+        [AlsoNotifyFor(nameof(NodeProfilingData))]
+        public double UpperTimeRange { get; set; }
+
         public ChartValues<ProfilingDataPoint> NodeProfilingData { get; private set; }
+
+        public WeightedMapper<ProfilingDataPoint> Mapper { get; private set; }
+
+        public ProfilingDataPoint SelectedData { get; set; }
 
         public DiagnosticMainViewModel(IProfilingManager manager)
         {
             this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            this.NodeProfilingData = new ChartValues<ProfilingDataPoint>();
 
-            Charting.For<ProfilingDataPoint>(ChartMappers.ProfilingDataPointMapper);
+            this.Mapper = ChartMappers.ProfilingDataPointMapper;
 
             this.RegisterSession(this.manager.CurrentSession);
             this.RegisterEvents();
         }
 
+        private void NodeProfilingDataFilter(object sender, FilterEventArgs e)
+        {
+            ProfilingDataPoint dataPoint = e.Item as ProfilingDataPoint;
+
+            if (dataPoint == null)
+                e.Accepted = false;
+            else
+                e.Accepted = dataPoint.Weight >= this.LowerTimeRange && dataPoint.Weight <= this.UpperTimeRange;
+        }
+
         public void Dispose()
         {
             this.UnregisterEvents();
+            this.UnregisterSessionEvents(this.session);
         }
 
         #region Events
@@ -66,7 +95,6 @@ namespace DiagnosticToolkit.UI.ViewModels
             this.session.DataRemoved += this.OnDataRemoved;
         }
 
-
         private void UnregisterSessionEvents(IProfilingSession session)
         {
             if (this.session == null)
@@ -83,11 +111,12 @@ namespace DiagnosticToolkit.UI.ViewModels
         {
             this.UnregisterSessionEvents(this.session);
             this.session = session;
+            this.NodeProfilingData = new ChartValues<ProfilingDataPoint>();
 
             if (this.session != null && this.session.ProfilingData.Any())
             {
                 var dataPoints = this.session.ProfilingData.Select(data => new ProfilingDataPoint(data));
-                this.NodeProfilingData = new ChartValues<ProfilingDataPoint>(dataPoints);
+                this.NodeProfilingData.AddRange(dataPoints);
             }
 
             this.RegisterSessionEvents(this.session);
@@ -104,12 +133,20 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         private void OnSessionEnded(object sender, EventArgs e)
         {
+            double min = Double.PositiveInfinity;
+            double max = 0;
             CallingDispatcher.Invoke(() =>
             {
                 foreach (var dataPoint in this.NodeProfilingData)
                 {
                     dataPoint.UpdateWeight();
+
+                    if (dataPoint.Weight < min) min = dataPoint.Weight;
+                    if (dataPoint.Weight > max) max = dataPoint.Weight;
                 }
+
+                this.MinimumExecutionTime = min;
+                this.MaximumExecutionTime = max;
             });        
         }
 

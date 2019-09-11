@@ -8,21 +8,77 @@
              xmlns:lvcMappers="clr-namespace:DiagnosticToolkit.UI.Models"
              xmlns:local="clr-namespace:DiagnosticToolkit.UI.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="800">
     <controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/DiagnosticToolkit.UI;component/Resources/Style.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <Grid>
-        <lvc:CartesianChart>
-            <lvc:CartesianChart.Series>
-                <lvc:ScatterSeries Values="{Binding NodeProfilingData}" MinPointShapeDiameter="1" MaxPointShapeDiameter="50"/>
-            </lvc:CartesianChart.Series>
-        </lvc:CartesianChart>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" MinHeight="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <controls:MetroHeader Header="Graph Name" Content="{Binding Name}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1">
+                <controls:RangeSlider 
+                    AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"
+                    LowerValue="{Binding LowerTimeRange}"
+                    UpperValue="{Binding UpperTimeRange}"
+                    Minimum="{Binding MinimumExecutionTime}"
+                    Maximum="{Binding MaximumExecutionTime}"/>
+            </StackPanel>
+        </Grid>
+
+        <ListBox Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Expander Header="Scatter Plot" VerticalAlignment="Top" IsExpanded="True">
+                <lvc:CartesianChart MinHeight="300">
+                    <lvc:CartesianChart.Series>
+                        <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
+                                           Configuration="{Binding Mapper}"
+                                           Values="{Binding NodeProfilingData}"/>
+                    </lvc:CartesianChart.Series>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis IsMerged="True">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis IsMerged="True">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+            </Expander>
+            <Expander Header="Table" VerticalAlignment="Top" IsExpanded="True">
+                <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
+                          ItemsSource="{Binding NodeProfilingData}"
+                          SelectedItem="{Binding SelectedData}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Instance.Id}"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Instance.Name}"/>
+                        <DataGridTextColumn Header="Execution Time (ms)" Binding="{Binding Weight}"/>
+                    </DataGrid.Columns>
+
+                </DataGrid>
+            </Expander>
+        </ListBox>
 
     </Grid>
 </controls:MetroWindow>

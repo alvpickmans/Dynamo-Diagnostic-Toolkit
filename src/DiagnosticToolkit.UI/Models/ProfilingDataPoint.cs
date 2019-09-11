@@ -13,7 +13,7 @@ namespace DiagnosticToolkit.UI.Models
     {
         public IProfilingData Instance { get; private set; }
 
-        public ProfilingDataPoint(IProfilingData profilingData) : base(profilingData.X, profilingData.Y)
+        public ProfilingDataPoint(IProfilingData profilingData) : base(profilingData.X, profilingData.Y, profilingData.ExecutionTime.TotalMilliseconds)
         {
             this.Instance = profilingData;
             this.Instance.PositionChanged += this.OnPositionChanged;

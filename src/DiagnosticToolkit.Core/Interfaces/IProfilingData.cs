@@ -8,9 +8,13 @@ namespace DiagnosticToolkit.Core.Interfaces
     {
         TimeSpan ExecutionTime { get; }
 
+        string Name { get; }
+        string Id { get; }
+
         double X { get; }
         double Y { get; }
 
         event Action<IProfilingData> PositionChanged;
+        event Action<IProfilingData> ProfilingExecuted;
     }
 }
