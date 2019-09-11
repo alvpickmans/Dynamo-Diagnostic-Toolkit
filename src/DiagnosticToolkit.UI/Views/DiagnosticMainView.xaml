@@ -28,18 +28,19 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel>
-                <controls:MetroHeader Header="Graph Name" Content="{Binding Name}"/>
+            <StackPanel Margin="10,5">
+                <controls:MetroHeader Header="{Binding SessionName, FallbackValue=&lt;None&gt;}" Content="Graph Name"/>
             </StackPanel>
 
-            <StackPanel Grid.Column="1">
+            <!--TODO: Uncomment below once filtering is implemented-->
+            <!--<StackPanel Grid.Column="1">
                 <controls:RangeSlider 
                     AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"
                     LowerValue="{Binding LowerTimeRange}"
                     UpperValue="{Binding UpperTimeRange}"
                     Minimum="{Binding MinimumExecutionTime}"
                     Maximum="{Binding MaximumExecutionTime}"/>
-            </StackPanel>
+            </StackPanel>-->
         </Grid>
 
         <ListBox Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">

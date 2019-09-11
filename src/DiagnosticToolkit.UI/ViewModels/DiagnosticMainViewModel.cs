@@ -109,6 +109,7 @@ namespace DiagnosticToolkit.UI.ViewModels
         {
             this.UnregisterSessionEvents(this.session);
             this.session = session;
+            this.SessionName = session?.Name;
             this.NodeProfilingData = new ChartValues<ProfilingDataPoint>();
 
             if (this.session != null && this.session.ProfilingData.Any())
