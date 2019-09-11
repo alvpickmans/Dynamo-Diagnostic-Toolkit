@@ -1,0 +1,107 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.68">
+
+  <PropertyGroup>
+    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFramework>net47</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Forcibly set platform to 'x64' and ignore architecture-related problems -->
+    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>x64</Platforms>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+
+    <!-- Force the project to use the legacy debugger engine -->
+    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
+
+    <!-- Invert the behavior of new .csproj format - exclude files by default -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultItems>false</EnableDefaultItems>
+
+    <!-- Multiple targets can cause obj folder locking by concurrent builds -->
+    <BuildInParallel>false</BuildInParallel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="DynamoProfilingManager.cs" />
+    <Compile Include="DiagnosticViewExtension.cs" />
+    <Compile Include="Profiling\NodeProfilingData.cs" />
+    <Compile Include="Profiling\Session.cs" />
+    <Compile Include="Utilities\NodeViewCollector.cs" />
+    <Compile Include="Utilities\WindowExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamoVisualProgramming.Core" Version="2.3.0.5885" PrivateAssets="All" IncludeAssets="compile" />
+    <PackageReference Include="DynamoVisualProgramming.DynamoServices" Version="2.3.0.5885" PrivateAssets="All" IncludeAssets="compile" />
+    <PackageReference Include="DynamoVisualProgramming.WpfUILibrary" Version="2.3.0.5885" PrivateAssets="All" IncludeAssets="compile" />
+    <PackageReference Include="DynamoVisualProgramming.ZeroTouchLibrary" Version="2.3.0.5885" PrivateAssets="All" IncludeAssets="compile" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Manifests\DiagnosticToolkit.Dynamo_ViewExtensionDefinition.xml" />
+    <None Include="Manifests\pkg.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DiagnosticToolkit.Core\DiagnosticToolkit.Core.csproj" />
+    <ProjectReference Include="..\DiagnosticToolkit.UI\DiagnosticToolkit.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <!--Build Deployment-->
+  <PropertyGroup>
+    <DynamoVersion>2.3</DynamoVersion>
+    <PackageName>DiagnosticToolkit</PackageName>
+    <PackageFolder>$(SolutionDir)..\dist\$(PackageName)\</PackageFolder>
+    <BinFolder>$(PackageFolder)bin\</BinFolder>
+    <ExtraFolder>$(PackageFolder)extra\</ExtraFolder>
+    <DyfFolder>$(PackageFolder)dyf\</DyfFolder>
+  </PropertyGroup>
+  
+  <Target Name="BundlePackage" AfterTargets="AfterBuild">
+    <ItemGroup>
+      <Dlls Include="$(OutDir)*.dll" />
+      <Pdbs Include="$(OutDir)*.pdb" />
+      <Xmls Include="$(OutDir)*.xml" />
+      <ViewExtensionDefinition Include="$(ProjectDir)Manifests\*ViewExtensionDefinition.xml" />
+      <PackageJson Include="$(ProjectDir)Manifests\pkg.json" />
+    </ItemGroup>
+    
+    <MakeDir Directories="$(ExtraFolder)" Condition="!Exists($(ExtraFolder))" />
+    <MakeDir Directories="$(DyfFolder)" Condition="!Exists($(DyfFolder))" />
+    
+    <Copy SourceFiles="@(Dlls)" DestinationFolder="$(BinFolder)" />
+    <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(BinFolder)" />
+    <Copy SourceFiles="@(Xmls)" DestinationFolder="$(BinFolder)" />
+    <Copy SourceFiles="@(ViewExtensionDefinition)" DestinationFolder="$(ExtraFolder)" />
+    <Copy SourceFiles="@(PackageJson)" DestinationFolder="$(PackageFolder)" />
+    
+    <CallTarget Condition="'$(Configuration)' == 'Debug'" Targets="PackageDeploy" />
+  </Target>
+  
+  <Target Name="PackageDeploy">
+    <ItemGroup>
+      <SourcePackage Include="$(PackageFolder)**\*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <DynamoCore>$(AppData)\Dynamo\Dynamo Core\$(DynamoVersion)\packages</DynamoCore>
+      <DynamoRevit>$(AppData)\Dynamo\Dynamo Revit\$(DynamoVersion)\packages</DynamoRevit>
+    </PropertyGroup>
+    <!--Copying to Package Folder-->
+    <Message Importance="high" Text="Dynamo Core Package Folder = $(DynamoCore)" />
+    <Message Importance="high" Text="Dynamo Revit Package Folder = $(DynamoRevit)" />
+    <Copy SourceFiles="@(SourcePackage)" Condition="Exists($(DynamoCore))" DestinationFolder="$(DynamoCore)\$(PackageName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(SourcePackage)" Condition="Exists($(DynamoRevit))" DestinationFolder="$(DynamoRevit)\$(PackageName)\%(RecursiveDir)" />
+  </Target>
+
+</Project>

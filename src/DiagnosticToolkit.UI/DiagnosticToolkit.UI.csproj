@@ -1,0 +1,27 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.68">
+
+  <PropertyGroup>
+    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+    <TargetFramework>net47</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ViewModels - Copy\**" />
+    <EmbeddedResource Remove="ViewModels - Copy\**" />
+    <None Remove="ViewModels - Copy\**" />
+    <Page Remove="ViewModels - Copy\**" />
+    <_SettingsFiles Remove="ViewModels - Copy\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageReference Include="MahApps.Metro" Version="1.6.5" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.1.3" />
+    <PackageReference Include="TinyLittleMvvm" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DiagnosticToolkit.Core\DiagnosticToolkit.Core.csproj" />
+  </ItemGroup>
+
+</Project>

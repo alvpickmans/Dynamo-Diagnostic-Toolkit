@@ -1,4 +1,0 @@
-﻿<ViewExtensionDefinition>
-  <AssemblyPath>..\bin\DiagnosticToolkit.dll</AssemblyPath>
-  <TypeName>DiagnosticToolkit.DiagnosticToolkitViewExtension</TypeName>
-</ViewExtensionDefinition>
