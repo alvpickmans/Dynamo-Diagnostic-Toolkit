@@ -12,7 +12,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
     public class NodeProfilingData : IProfilingData, IDisposable
     {
         public TimeSpan ExecutionTime { get; private set; }
-        private DateTime startTime { get; set; }
+
+        public bool Executed => this.startTime.HasValue;
+        private DateTime? startTime { get; set; }
 
         public string Name => this.Node.Name;
         public string Id => this.Node.GUID.ToString();
@@ -36,6 +38,11 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.Y = position.Y * -1;
 
             this.OnPositionChanged(this);
+        }
+
+        public void Reset()
+        {
+            this.startTime = null;
         }
 
         #region ProfilingData Events
@@ -69,13 +76,14 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         private void OnNodeExecutionBegin(NodeModel obj)
         {
             this.startTime = DateTime.Now;
-
         }
 
         private void OnNodeExecutionEnd(NodeModel obj)
         {
-            this.ExecutionTime = DateTime.Now.Subtract(this.startTime);
+            if (!this.startTime.HasValue)
+                return;
 
+            this.ExecutionTime = DateTime.Now.Subtract(this.startTime.Value);
             this.OnProfilingExecuted(this);
         }
 

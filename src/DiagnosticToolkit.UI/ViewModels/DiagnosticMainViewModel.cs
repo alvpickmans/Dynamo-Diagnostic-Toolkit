@@ -41,15 +41,13 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public ChartValues<ProfilingDataPoint> NodeProfilingData { get; private set; }
 
-        public WeightedMapper<ProfilingDataPoint> Mapper { get; private set; }
+        public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
 
         public ProfilingDataPoint SelectedData { get; set; }
 
         public DiagnosticMainViewModel(IProfilingManager manager)
         {
             this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
-
-            this.Mapper = ChartMappers.ProfilingDataPointMapper;
 
             this.RegisterSession(this.manager.CurrentSession);
             this.RegisterEvents();

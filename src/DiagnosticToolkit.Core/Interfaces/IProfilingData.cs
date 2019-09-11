@@ -8,6 +8,8 @@ namespace DiagnosticToolkit.Core.Interfaces
     {
         TimeSpan ExecutionTime { get; }
 
+        bool Executed { get; }
+
         string Name { get; }
         string Id { get; }
 

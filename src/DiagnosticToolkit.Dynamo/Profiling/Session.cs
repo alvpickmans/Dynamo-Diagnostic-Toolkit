@@ -1,14 +1,9 @@
 ﻿using DiagnosticToolkit.Core.Interfaces;
-using Dynamo.Engine;
-using Dynamo.Events;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
-using Dynamo.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DiagnosticToolkit.Dynamo.Profiling
 {
@@ -28,7 +23,6 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         private DateTime? startTime;
         public bool Executing => startTime.HasValue;
 
-
         /// <summary>
         /// Creates a new instance of Dynamo Profiling Session
         /// </summary>
@@ -46,7 +40,12 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         /// </summary>
         /// <returns></returns>
         public Session Start()
-        {            
+        {
+            foreach (var data in nodesData.Values)
+            {
+                data.Reset();
+            }
+
             this.startTime = DateTime.Now;
 
             this.OnSessionStarted(EventArgs.Empty);
@@ -117,20 +116,27 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         }
 
         #region Events
+
         public event EventHandler SessionStarted;
+
         protected void OnSessionStarted(EventArgs e) => SessionStarted?.Invoke(this, e);
 
         public event EventHandler SessionEnded;
+
         protected void OnSessionEnded(EventArgs e) => SessionEnded?.Invoke(this, e);
 
         public event EventHandler SessionCleared;
+
         protected void OnSessionCleared(EventArgs e) => SessionCleared?.Invoke(this, e);
 
         public event Action<IProfilingData> DataAdded;
+
         protected void OnDataAdded(IProfilingData data) => DataAdded?.Invoke(data);
 
         public event Action<IProfilingData> DataRemoved;
+
         protected void OnDataRemoved(IProfilingData data) => DataRemoved?.Invoke(data);
-        #endregion
+
+        #endregion Events
     }
 }
