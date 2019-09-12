@@ -11,7 +11,7 @@ namespace DiagnosticToolkit.UI.Models
 {
     public static class ChartMappers
     {
-        private static Brush NotExecutedBrush = new SolidColorBrush(Color.FromArgb(255, 100, 100, 100));
+        private static Brush NotExecutedBrush = new SolidColorBrush(Color.FromArgb(200, 175, 175, 175));
 
         public static WeightedMapper<ProfilingDataPoint> ProfilingDataPointMapper = Mappers
             .Weighted<ProfilingDataPoint>()
