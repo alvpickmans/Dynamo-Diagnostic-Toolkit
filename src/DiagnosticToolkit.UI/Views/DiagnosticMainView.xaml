@@ -7,6 +7,7 @@
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:lvcMappers="clr-namespace:DiagnosticToolkit.UI.Models"
              xmlns:local="clr-namespace:DiagnosticToolkit.UI.Views"
+             xmlns:customControls="clr-namespace:DiagnosticToolkit.UI.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <controls:MetroWindow.Resources>
@@ -46,6 +47,9 @@
         <ListBox Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <Expander Header="Scatter Plot" VerticalAlignment="Top" IsExpanded="True">
                 <lvc:CartesianChart MinHeight="300">
+                    <lvc:CartesianChart.DataTooltip>
+                        <customControls:NodeDataTooltip/>
+                    </lvc:CartesianChart.DataTooltip>
                     <lvc:CartesianChart.Series>
                         <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
                                            Configuration="{Binding Mapper}"
