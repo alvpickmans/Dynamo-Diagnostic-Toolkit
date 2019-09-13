@@ -78,7 +78,13 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Instance.Id}"/>
                         <DataGridTextColumn Header="Name" Binding="{Binding Instance.Name}"/>
-                        <DataGridTextColumn Header="Execution Time (ms)" Binding="{Binding Weight}"/>
+                        <DataGridTextColumn Header="Execution Time (ms)" Binding="{Binding Weight}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Center" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
 
                 </DataGrid>
