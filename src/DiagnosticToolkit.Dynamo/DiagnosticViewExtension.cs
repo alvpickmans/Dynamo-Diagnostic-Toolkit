@@ -22,6 +22,8 @@ namespace DiagnosticToolkit.Dynamo
         public string Name => NAME;
 
         private DynamoProfilingManager manager { get; set; }
+        private DiagnosticMainViewModel viewModel { get; set; }
+        private DiagnosticMainView view { get; set; }
 
         public void Startup(ViewStartupParams parameters)
         {
@@ -56,12 +58,7 @@ namespace DiagnosticToolkit.Dynamo
 
             var launchToolkit = new MenuItem() { Header = "Launch" };
 
-            launchToolkit.Click += (sender, args) =>
-            {
-                DiagnosticMainViewModel viewModel = new DiagnosticMainViewModel(this.manager);
-                DiagnosticMainView view = new DiagnosticMainView(viewModel);
-                view.Show();
-            };
+            launchToolkit.Click += this.OpenDiagnosticWindow;
 
             var enableCheckbox = new CheckBox() {
                 Content = "Profiling Enabled",
@@ -80,9 +77,31 @@ namespace DiagnosticToolkit.Dynamo
             this.loadedParameters.dynamoMenu.Items.Add(this.mainMenu);
         }
 
+        private void OpenDiagnosticWindow(object sender, RoutedEventArgs e)
+        {
+            if (this.view != null)
+            {
+                this.view.Activate();
+                return;
+            }
+
+            this.viewModel = new DiagnosticMainViewModel(this.manager);
+            this.view = new DiagnosticMainView(viewModel);
+            this.view.Closed += (viewSender, args) =>
+            {
+                this.viewModel.Dispose();
+                this.viewModel = null;
+                this.view = null;
+            };
+
+            this.view.Show();
+        }
+
         public void Shutdown()
         {
             this.manager?.Dispose();
+
+            this.view?.Close();
         }
 
         public void Dispose()
