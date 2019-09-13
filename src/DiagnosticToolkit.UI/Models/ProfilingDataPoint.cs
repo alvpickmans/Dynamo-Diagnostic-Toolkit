@@ -13,12 +13,11 @@ namespace DiagnosticToolkit.UI.Models
     {
         public IProfilingData Instance { get; private set; }
 
-
-
-        public ProfilingDataPoint(IProfilingData profilingData) : base(profilingData.X, profilingData.Y, profilingData.ExecutionTime.TotalMilliseconds)
+        public ProfilingDataPoint(IProfilingData profilingData) : base(profilingData.X, profilingData.Y)
         {
             this.Instance = profilingData;
             this.Instance.PositionChanged += this.OnPositionChanged;
+            this.Weight = Math.Round(this.Instance.ExecutionTime.TotalMilliseconds);
         }
 
         public event Action PointChanged;
@@ -26,7 +25,7 @@ namespace DiagnosticToolkit.UI.Models
 
         public void UpdateWeight()
         {
-            this.Weight = this.Instance.ExecutionTime.TotalMilliseconds;
+            this.Weight = Math.Round(this.Instance.ExecutionTime.TotalMilliseconds);
             this.OnPointChanged();
         }
 
