@@ -99,10 +99,13 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
         private void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(NodeModel.Position))
-                return;
 
-            this.UpdatePosition(this.Node.Position);
+            if (e.PropertyName == nameof(NodeModel.Position))
+                this.UpdatePosition(this.Node.Position);
+
+            if (e.PropertyName == nameof(NodeModel.Name))
+                this.OnModified(this);               
+
         } 
 
         private void OnNodeModified(NodeModel obj) => this.OnModified(this);
