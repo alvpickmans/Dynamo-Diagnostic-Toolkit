@@ -16,7 +16,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public bool Executed => this.startTime.HasValue;
 
         public bool CanRequestExecution => true;
-        public bool HasExecutionPending => this.Node.NeedsForceExecution;
+        public bool HasExecutionPending => this.Node.NeedsForceExecution || this.Node.IsModified;
 
         public NodeModel Node { get; private set; }
         public string NodeId => this.Node?.GUID.ToString();
