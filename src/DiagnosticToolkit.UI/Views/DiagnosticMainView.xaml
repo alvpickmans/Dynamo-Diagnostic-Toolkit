@@ -44,52 +44,54 @@
             </StackPanel>-->
         </Grid>
 
-        <ListBox Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <Expander Header="Scatter Plot" VerticalAlignment="Top" IsExpanded="True">
-                <lvc:CartesianChart MinHeight="300">
-                    <lvc:CartesianChart.DataTooltip>
-                        <customControls:NodeDataTooltip/>
-                    </lvc:CartesianChart.DataTooltip>
-                    <lvc:CartesianChart.Series>
-                        <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
+        <ScrollViewer Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Expander Header="Scatter Plot" VerticalAlignment="Top" IsExpanded="True">
+                    <lvc:CartesianChart MinHeight="300">
+                        <lvc:CartesianChart.DataTooltip>
+                            <customControls:NodeDataTooltip/>
+                        </lvc:CartesianChart.DataTooltip>
+                        <lvc:CartesianChart.Series>
+                            <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
                                            Configuration="{Binding Mapper}"
                                            Values="{Binding NodeProfilingData}"/>
-                    </lvc:CartesianChart.Series>
-                    <lvc:CartesianChart.AxisX>
-                        <lvc:Axis IsMerged="True">
-                            <lvc:Axis.Separator>
-                                <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
-                            </lvc:Axis.Separator>
-                        </lvc:Axis>
-                    </lvc:CartesianChart.AxisX>
-                    <lvc:CartesianChart.AxisY>
-                        <lvc:Axis IsMerged="True">
-                            <lvc:Axis.Separator>
-                                <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
-                            </lvc:Axis.Separator>
-                        </lvc:Axis>
-                    </lvc:CartesianChart.AxisY>
-                </lvc:CartesianChart>
-            </Expander>
-            <Expander Header="Table" VerticalAlignment="Top" IsExpanded="True">
-                <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
+                        </lvc:CartesianChart.Series>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis IsMerged="True">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis IsMerged="True">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Expander>
+                <Expander Header="Table" VerticalAlignment="Top" IsExpanded="True" MaxHeight="400">
+                    <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
                           ItemsSource="{Binding NodeProfilingData}"
                           SelectedItem="{Binding SelectedData}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding Instance.Id}"/>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Instance.Name}"/>
-                        <DataGridTextColumn Header="Execution Time (ms)" Binding="{Binding Weight}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="TextAlignment" Value="Center" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Instance.Id}"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Instance.Name}"/>
+                            <DataGridTextColumn Header="Execution Time (ms)" Binding="{Binding Weight}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
 
-                </DataGrid>
-            </Expander>
-        </ListBox>
+                    </DataGrid>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
 
     </Grid>
 </controls:MetroWindow>
