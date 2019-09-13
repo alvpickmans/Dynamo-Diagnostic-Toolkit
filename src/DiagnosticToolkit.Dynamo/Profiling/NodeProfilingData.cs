@@ -15,7 +15,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public TimeSpan ExecutionTime { get; private set; }
         public bool Executed => this.startTime.HasValue;
 
-        public bool CanScheduleExecution => true;
+        public bool CanRequestExecution => true;
         public bool HasExecutionPending => this.Node.NeedsForceExecution;
 
         public NodeModel Node { get; private set; }
@@ -41,7 +41,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.OnPositionChanged(this);
         }
 
-        public void ScheduleExecution() => this.Node.MarkNodeAsModified(true);
+        public void RequestExecution() => this.Node.MarkNodeAsModified(true);
 
         public void Reset()
         {

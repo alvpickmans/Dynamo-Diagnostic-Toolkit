@@ -94,9 +94,10 @@
             </StackPanel>
         </ScrollViewer>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button Content="Force Execution" HorizontalAlignment="Center" VerticalAlignment="Center"
+        <DockPanel Grid.Row="2">
+            <Button Content="Request Execution" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    ToolTip="All nodes will be executed on the next run."
                     Command="{Binding ForceExecutionCommand}"/>
-        </StackPanel>
+        </DockPanel>
     </Grid>
 </controls:MetroWindow>

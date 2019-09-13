@@ -177,7 +177,7 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public ICommand ForceExecutionCommand => new RelayCommand(ForceExecutionExecute, CanForceExecution);
 
-        public bool CanForceExecution() => this.NodeProfilingData.Any(data => data.Instance.CanScheduleExecution && !data.Instance.HasExecutionPending);
+        public bool CanForceExecution() => this.NodeProfilingData.Any(data => data.Instance.CanRequestExecution && !data.Instance.HasExecutionPending);
 
         public void ForceExecutionExecute()
         {

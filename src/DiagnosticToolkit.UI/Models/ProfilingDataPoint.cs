@@ -22,8 +22,8 @@ namespace DiagnosticToolkit.UI.Models
 
         public void ForceExecution()
         {
-            if (this.Instance.CanScheduleExecution)
-                this.Instance.ScheduleExecution();
+            if (this.Instance.CanRequestExecution)
+                this.Instance.RequestExecution();
 
             this.OnPointChanged();
         }
