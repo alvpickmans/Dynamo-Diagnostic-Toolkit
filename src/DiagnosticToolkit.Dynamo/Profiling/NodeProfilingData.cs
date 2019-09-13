@@ -12,6 +12,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
     public class NodeProfilingData : IProfilingData, IDisposable
     {
         private DateTime? startTime { get; set; }
+        private DateTime? endTime { get; set; }
         public TimeSpan ExecutionTime { get; private set; }
         public bool Executed => this.startTime.HasValue;
 
@@ -46,6 +47,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public void Reset()
         {
             this.startTime = null;
+            this.endTime = null;
         }
 
         #region ProfilingData Events
@@ -90,10 +92,13 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
         private void OnNodeExecutionEnd(NodeModel obj)
         {
-            if (!this.startTime.HasValue)
+            // For some reason, Dynamo is calling execution ended more than once for the same node
+            // If not for this `endTime` check, it will overwrite Execution time;
+            if (!this.startTime.HasValue || this.endTime.HasValue)
                 return;
 
-            this.ExecutionTime = DateTime.Now.Subtract(this.startTime.Value);
+            this.endTime = DateTime.Now;
+            this.ExecutionTime = this.endTime.Value.Subtract(this.startTime.Value);
             this.OnProfilingExecuted(this);
         }
 

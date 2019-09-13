@@ -46,9 +46,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
                 data.Reset();
             }
 
+            this.OnSessionStarted(EventArgs.Empty);
             this.startTime = DateTime.Now;
 
-            this.OnSessionStarted(EventArgs.Empty);
             return this;
         }
 
