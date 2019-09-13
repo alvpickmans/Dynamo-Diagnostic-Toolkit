@@ -16,7 +16,7 @@ namespace DiagnosticToolkit.UI.Models
 
         private static Brush GetFillBrush(this ProfilingDataPoint point)
         {
-            return point.Instance.Executed ? NotExecutedBrush : null;
+            return !point.Instance.Executed ? NotExecutedBrush : null;
         }
 
         private static Brush GetStrokeBrush(this ProfilingDataPoint point)
