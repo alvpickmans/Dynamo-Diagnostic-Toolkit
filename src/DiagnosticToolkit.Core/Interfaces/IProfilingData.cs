@@ -21,6 +21,8 @@ namespace DiagnosticToolkit.Core.Interfaces
 
         void RequestExecution();
 
+        event Action<IProfilingData> Modified;
+
         event Action<IProfilingData> PositionChanged;
         event Action<IProfilingData> ProfilingExecuted;
     }

@@ -49,6 +49,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         }
 
         #region ProfilingData Events
+        public event Action<IProfilingData> Modified;
+        private void OnModified(IProfilingData data) => this.Modified?.Invoke(data);
+
         public event Action<IProfilingData> PositionChanged;
         private void OnPositionChanged(IProfilingData data) => this.PositionChanged?.Invoke(data);
 
@@ -65,7 +68,9 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.Node.NodeExecutionBegin += this.OnNodeExecutionBegin;
             this.Node.NodeExecutionEnd += this.OnNodeExecutionEnd;
             this.Node.PropertyChanged += this.OnNodePropertyChanged;
+            this.Node.Modified += this.OnNodeModified;
         }
+
 
         private void UnregisterEvents()
         {
@@ -74,6 +79,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
             this.Node.NodeExecutionBegin -= this.OnNodeExecutionBegin;
             this.Node.NodeExecutionEnd -= this.OnNodeExecutionEnd;
+            this.Node.PropertyChanged -= this.OnNodePropertyChanged;
+            this.Node.Modified -= this.OnNodeModified;
         }
 
         private void OnNodeExecutionBegin(NodeModel obj)
@@ -97,6 +104,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
             this.UpdatePosition(this.Node.Position);
         } 
+
+        private void OnNodeModified(NodeModel obj) => this.OnModified(this);
         #endregion
 
         public void Dispose()
