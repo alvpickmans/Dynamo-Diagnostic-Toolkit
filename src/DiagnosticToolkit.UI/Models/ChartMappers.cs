@@ -12,12 +12,29 @@ namespace DiagnosticToolkit.UI.Models
     public static class ChartMappers
     {
         private static Brush NotExecutedBrush = new SolidColorBrush(Color.FromArgb(200, 175, 175, 175));
+        private static Brush ExecutionRequestedBrush = new SolidColorBrush(Color.FromArgb(200, 255, 165, 0));
+
+        private static Brush GetFillBrush(this ProfilingDataPoint point)
+        {
+            if (point.Instance.HasExecutionPending)
+                return ExecutionRequestedBrush;
+
+            if (!point.Instance.Executed)
+                return NotExecutedBrush;
+
+            return null;
+        }
+
+        private static Brush GetStrokeBrush(this ProfilingDataPoint point)
+        {
+            return point.Instance.HasExecutionPending ? ExecutionRequestedBrush : point.GetFillBrush();
+        }
 
         public static WeightedMapper<ProfilingDataPoint> ProfilingDataPointMapper = Mappers
             .Weighted<ProfilingDataPoint>()
             .X(value => value.X)
             .Y(value => value.Y)
             .Weight(value => value.Weight)
-            .Fill(value => !value.Instance.Executed ? NotExecutedBrush : null);
+            .Fill(value => value.GetFillBrush());
     }
 }

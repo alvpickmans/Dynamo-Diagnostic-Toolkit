@@ -13,6 +13,8 @@ using System.Windows.Data;
 using System.Windows.Threading;
 using PropertyChanged;
 using LiveCharts.Configurations;
+using TinyLittleMvvm;
+using System.Windows.Input;
 
 namespace DiagnosticToolkit.UI.ViewModels
 {
@@ -20,6 +22,7 @@ namespace DiagnosticToolkit.UI.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        #region Properties
         private Dispatcher CallingDispatcher = Dispatcher.CurrentDispatcher;
 
         private IProfilingManager manager;
@@ -43,7 +46,8 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
 
-        public ProfilingDataPoint SelectedData { get; set; }
+        public ProfilingDataPoint SelectedData { get; set; } 
+        #endregion
 
         public DiagnosticMainViewModel(IProfilingManager manager)
         {
@@ -128,6 +132,7 @@ namespace DiagnosticToolkit.UI.ViewModels
         private void OnSessionCleared(object sender, EventArgs e)
         {
             this.NodeProfilingData.Clear();
+            this.SessionName = this.session.Name;
         }
 
         private void OnSessionEnded(object sender, EventArgs e)
@@ -163,5 +168,28 @@ namespace DiagnosticToolkit.UI.ViewModels
 
 
         #endregion Events
+
+        #region Commands
+
+        public ICommand RequestAllExecutionCommand => new RelayCommand(RequestAllExecutionExecute, CanRequestAllExecution);
+
+        public bool CanRequestAllExecution() => this.NodeProfilingData.Any(data => data.Instance.CanRequestExecution && !data.Instance.HasExecutionPending);
+
+        public void RequestAllExecutionExecute()
+        {
+            foreach (var data in this.NodeProfilingData)
+            {
+                data.ForceExecution();
+            }
+        }
+
+        public ICommand RequestNodeExecutionCommand => new RelayCommand<object>(RequestNodeExecutionExecute, CanRequestNodeExecution);
+        public bool CanRequestNodeExecution(object obj) => this.SelectedData != null;
+        public void RequestNodeExecutionExecute(object obj)
+        {
+            this.SelectedData.ForceExecution();
+        }
+
+        #endregion
     }
 }

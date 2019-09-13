@@ -7,6 +7,9 @@ namespace DiagnosticToolkit.Core.Interfaces
     public interface IProfilingData
     {
         TimeSpan ExecutionTime { get; }
+        bool CanRequestExecution { get; }
+
+        bool HasExecutionPending { get; }
 
         bool Executed { get; }
 
@@ -15,6 +18,10 @@ namespace DiagnosticToolkit.Core.Interfaces
 
         double X { get; }
         double Y { get; }
+
+        void RequestExecution();
+
+        event Action<IProfilingData> Modified;
 
         event Action<IProfilingData> PositionChanged;
         event Action<IProfilingData> ProfilingExecuted;
