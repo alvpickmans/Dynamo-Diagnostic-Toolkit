@@ -16,7 +16,13 @@ namespace DiagnosticToolkit.UI.Models
 
         private static Brush GetFillBrush(this ProfilingDataPoint point)
         {
-            return !point.Instance.Executed ? NotExecutedBrush : null;
+            if (point.Instance.HasExecutionPending)
+                return ExecutionRequestedBrush;
+
+            if (!point.Instance.Executed)
+                return NotExecutedBrush;
+
+            return null;
         }
 
         private static Brush GetStrokeBrush(this ProfilingDataPoint point)
@@ -29,7 +35,6 @@ namespace DiagnosticToolkit.UI.Models
             .X(value => value.X)
             .Y(value => value.Y)
             .Weight(value => value.Weight)
-            .Fill(value => value.GetFillBrush())
-            .Stroke(value => value.GetStrokeBrush());
+            .Fill(value => value.GetFillBrush());
     }
 }

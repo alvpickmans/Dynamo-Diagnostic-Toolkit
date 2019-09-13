@@ -132,6 +132,7 @@ namespace DiagnosticToolkit.UI.ViewModels
         private void OnSessionCleared(object sender, EventArgs e)
         {
             this.NodeProfilingData.Clear();
+            this.SessionName = this.session.Name;
         }
 
         private void OnSessionEnded(object sender, EventArgs e)

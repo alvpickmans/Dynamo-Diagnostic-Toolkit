@@ -63,7 +63,6 @@
                         </lvc:CartesianChart.DataTooltip>
                         <lvc:CartesianChart.Series>
                             <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
-                                               StrokeThickness="2"
                                            Configuration="{Binding Mapper}"
                                            Values="{Binding NodeProfilingData}"/>
                         </lvc:CartesianChart.Series>
@@ -85,6 +84,7 @@
                 </Expander>
                 <Expander Header="Table" VerticalAlignment="Top" IsExpanded="True" MaxHeight="400">
                     <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
+                              SelectionMode="Single"
                               ItemsSource="{Binding NodeProfilingData}"
                               SelectedItem="{Binding SelectedData}"
                               ContextMenu="{StaticResource ProfilingNodeContextMenu}">
