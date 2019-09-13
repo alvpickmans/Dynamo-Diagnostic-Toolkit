@@ -21,6 +21,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" MinHeight="40"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto" MinHeight="40"/>
         </Grid.RowDefinitions>
 
         <Grid>
@@ -93,5 +94,9 @@
             </StackPanel>
         </ScrollViewer>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="Force Execution" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Command="{Binding ForceExecutionCommand}"/>
+        </StackPanel>
     </Grid>
 </controls:MetroWindow>

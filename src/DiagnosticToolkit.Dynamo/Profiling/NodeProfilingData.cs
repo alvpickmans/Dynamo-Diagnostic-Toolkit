@@ -11,19 +11,20 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 {
     public class NodeProfilingData : IProfilingData, IDisposable
     {
-        public TimeSpan ExecutionTime { get; private set; }
-
-        public bool Executed => this.startTime.HasValue;
         private DateTime? startTime { get; set; }
+        public TimeSpan ExecutionTime { get; private set; }
+        public bool Executed => this.startTime.HasValue;
 
+        public bool CanScheduleExecution => true;
+        public bool HasExecutionPending => this.Node.NeedsForceExecution;
+
+        public NodeModel Node { get; private set; }
+        public string NodeId => this.Node?.GUID.ToString();
         public string Name => this.Node.Name;
         public string Id => this.Node.GUID.ToString();
         public double X { get; private set; }
         public double Y { get; private set; }
 
-
-        public NodeModel Node { get; private set; }
-        public string NodeId => this.Node?.GUID.ToString();
 
         public NodeProfilingData(NodeModel node)
         {
@@ -39,6 +40,8 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
             this.OnPositionChanged(this);
         }
+
+        public void ScheduleExecution() => this.Node.MarkNodeAsModified(true);
 
         public void Reset()
         {

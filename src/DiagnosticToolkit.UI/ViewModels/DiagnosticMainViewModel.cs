@@ -13,6 +13,8 @@ using System.Windows.Data;
 using System.Windows.Threading;
 using PropertyChanged;
 using LiveCharts.Configurations;
+using TinyLittleMvvm;
+using System.Windows.Input;
 
 namespace DiagnosticToolkit.UI.ViewModels
 {
@@ -20,6 +22,7 @@ namespace DiagnosticToolkit.UI.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        #region Properties
         private Dispatcher CallingDispatcher = Dispatcher.CurrentDispatcher;
 
         private IProfilingManager manager;
@@ -43,7 +46,8 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
 
-        public ProfilingDataPoint SelectedData { get; set; }
+        public ProfilingDataPoint SelectedData { get; set; } 
+        #endregion
 
         public DiagnosticMainViewModel(IProfilingManager manager)
         {
@@ -163,5 +167,26 @@ namespace DiagnosticToolkit.UI.ViewModels
 
 
         #endregion Events
+
+        #region Commands
+
+        private void InitializeCommands()
+        {
+            //this.ForceExecutionCommand = new RelayCommand(ForceExecutionExecute, CanForceExecution);
+        }
+
+        public ICommand ForceExecutionCommand => new RelayCommand(ForceExecutionExecute, CanForceExecution);
+
+        public bool CanForceExecution() => this.NodeProfilingData.Any(data => data.Instance.CanScheduleExecution && !data.Instance.HasExecutionPending);
+
+        public void ForceExecutionExecute()
+        {
+            foreach (var data in this.NodeProfilingData)
+            {
+                data.ForceExecution();
+            }
+        }
+
+        #endregion
     }
 }

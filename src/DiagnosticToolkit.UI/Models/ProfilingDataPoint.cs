@@ -20,14 +20,22 @@ namespace DiagnosticToolkit.UI.Models
             this.Weight = Math.Round(this.Instance.ExecutionTime.TotalMilliseconds);
         }
 
-        public event Action PointChanged;
-        private void OnPointChanged() => PointChanged?.Invoke();
+        public void ForceExecution()
+        {
+            if (this.Instance.CanScheduleExecution)
+                this.Instance.ScheduleExecution();
+
+            this.OnPointChanged();
+        }
 
         public void UpdateWeight()
         {
             this.Weight = Math.Round(this.Instance.ExecutionTime.TotalMilliseconds);
             this.OnPointChanged();
         }
+
+        public event Action PointChanged;
+        private void OnPointChanged() => PointChanged?.Invoke();
 
         private void OnPositionChanged(IProfilingData data)
         {
