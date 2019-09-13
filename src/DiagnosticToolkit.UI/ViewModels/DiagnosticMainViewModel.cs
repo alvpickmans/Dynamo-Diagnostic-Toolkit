@@ -170,21 +170,23 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         #region Commands
 
-        private void InitializeCommands()
-        {
-            //this.ForceExecutionCommand = new RelayCommand(ForceExecutionExecute, CanForceExecution);
-        }
+        public ICommand RequestAllExecutionCommand => new RelayCommand(RequestAllExecutionExecute, CanRequestAllExecution);
 
-        public ICommand ForceExecutionCommand => new RelayCommand(ForceExecutionExecute, CanForceExecution);
+        public bool CanRequestAllExecution() => this.NodeProfilingData.Any(data => data.Instance.CanRequestExecution && !data.Instance.HasExecutionPending);
 
-        public bool CanForceExecution() => this.NodeProfilingData.Any(data => data.Instance.CanRequestExecution && !data.Instance.HasExecutionPending);
-
-        public void ForceExecutionExecute()
+        public void RequestAllExecutionExecute()
         {
             foreach (var data in this.NodeProfilingData)
             {
                 data.ForceExecution();
             }
+        }
+
+        public ICommand RequestNodeExecutionCommand => new RelayCommand<object>(RequestNodeExecutionExecute, CanRequestNodeExecution);
+        public bool CanRequestNodeExecution(object obj) => this.SelectedData != null;
+        public void RequestNodeExecutionExecute(object obj)
+        {
+            this.SelectedData.ForceExecution();
         }
 
         #endregion

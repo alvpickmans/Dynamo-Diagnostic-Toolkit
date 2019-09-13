@@ -15,6 +15,15 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/DiagnosticToolkit.UI;component/Resources/Style.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <ContextMenu x:Key="ProfilingNodeContextMenu"
+                         DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                <MenuItem Header="Request Execution"
+                          Command="{Binding RequestNodeExecutionCommand}"
+                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
+
+            </ContextMenu>
+
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <Grid>
@@ -76,8 +85,9 @@
                 </Expander>
                 <Expander Header="Table" VerticalAlignment="Top" IsExpanded="True" MaxHeight="400">
                     <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
-                          ItemsSource="{Binding NodeProfilingData}"
-                          SelectedItem="{Binding SelectedData}">
+                              ItemsSource="{Binding NodeProfilingData}"
+                              SelectedItem="{Binding SelectedData}"
+                              ContextMenu="{StaticResource ProfilingNodeContextMenu}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Instance.Id}"/>
                             <DataGridTextColumn Header="Name" Binding="{Binding Instance.Name}"/>
@@ -98,7 +108,7 @@
         <DockPanel Grid.Row="2">
             <Button Content="Request Execution" HorizontalAlignment="Center" VerticalAlignment="Center"
                     ToolTip="All nodes will be executed on the next run."
-                    Command="{Binding ForceExecutionCommand}"/>
+                    Command="{Binding RequestAllExecutionCommand}"/>
         </DockPanel>
     </Grid>
 </controls:MetroWindow>
