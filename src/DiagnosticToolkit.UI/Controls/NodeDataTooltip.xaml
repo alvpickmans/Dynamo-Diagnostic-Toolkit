@@ -32,9 +32,10 @@
                                />
 
                     <StackPanel Grid.Column="1" Margin="5">
-                        <controls:MetroHeader FontWeight="Light" Margin="5,0"
+                        <controls:MetroHeader FontWeight="Light" Margin="0,5"
                                               Content="Node Name" Header="{Binding ChartPoint.Instance.Instance.Name}"/>
-                        
+                        <controls:MetroHeader FontWeight="Light" Margin="0,5"
+                                              Content="Execution Time" Header="{Binding ChartPoint.Instance.Weight}" HeaderStringFormat="{}{0} ms"/>
                     </StackPanel>
                 </Grid>
             </DataTemplate>
