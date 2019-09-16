@@ -78,7 +78,7 @@
                                 <lvc:Axis.Separator>
                                     <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
                                 </lvc:Axis.Separator>
-                                <lvc:Axis.Sections>
+                                <!--<lvc:Axis.Sections>
                                     <lvc:AxisSection Value="{Binding CurrentDataPoint.X}" StrokeThickness="100" Panel.ZIndex="1">
                                         <lvc:AxisSection.Stroke>
                                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -95,7 +95,7 @@
                                             </LinearGradientBrush>
                                         </lvc:AxisSection.Stroke>
                                     </lvc:AxisSection>
-                                </lvc:Axis.Sections>
+                                </lvc:Axis.Sections>-->
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisX>
                         <lvc:CartesianChart.AxisY>

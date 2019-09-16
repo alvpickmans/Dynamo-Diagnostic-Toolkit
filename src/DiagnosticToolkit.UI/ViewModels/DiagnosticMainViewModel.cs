@@ -26,6 +26,7 @@ namespace DiagnosticToolkit.UI.ViewModels
         #region Properties
         private Dispatcher CallingDispatcher = Dispatcher.CurrentDispatcher;
 
+        private IDialogCoordinator Coordinator = DialogCoordinator.Instance;
         private ProgressDialogController dialogController;
 
         private IProfilingManager manager;
@@ -52,6 +53,8 @@ namespace DiagnosticToolkit.UI.ViewModels
         public ProfilingDataPoint SelectedData { get; set; }
 
         public int TotalNodes => this.NodeProfilingData.Count;
+
+        public int NodesToExecute { get; set; }
 
         public int ExecutedNodes { get; set; }
 
@@ -145,6 +148,14 @@ namespace DiagnosticToolkit.UI.ViewModels
         private void OnSessionStarted(object sender, EventArgs e)
         {
             this.ExecutedNodes = 0;
+            this.NodesToExecute = this.NodeProfilingData.Count(data => data.Instance.HasExecutionPending);
+
+            this.Coordinator.ShowProgressAsync(this, $"{this.SessionName}", "Starting execution...")
+                .ContinueWith(task => {
+                    this.dialogController = task.Result;
+                    this.dialogController.Minimum = 0;
+                    this.dialogController.Maximum = this.TotalNodes;
+                });
         }
 
         private void OnSessionCleared(object sender, EventArgs e)
@@ -169,7 +180,15 @@ namespace DiagnosticToolkit.UI.ViewModels
 
                 this.MinimumExecutionTime = min;
                 this.MaximumExecutionTime = max;
-            });        
+            });
+
+            if(this.dialogController != null && this.dialogController.IsOpen)
+            {
+                this.dialogController.CloseAsync().ContinueWith(task =>
+                {
+                    this.dialogController = null;
+                });
+            }
         }
 
         private void OnDataRemoved(IProfilingData data)
@@ -186,11 +205,13 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         private void OnDataStarted(ProfilingDataPoint data)
         {
-            CallingDispatcher.Invoke(() =>
+            this.ExecutedNodes += 1;
+
+            if (this.dialogController != null)
             {
-                this.CurrentDataPoint = data;
-                this.ExecutedNodes += 1;
-            });
+                this.dialogController.SetProgress(this.ExecutedNodes);
+                this.dialogController.SetMessage($"Executing '{data.Instance.Name}' - {this.ExecutedNodes} of {this.TotalNodes}");
+            }
         }
 
 
