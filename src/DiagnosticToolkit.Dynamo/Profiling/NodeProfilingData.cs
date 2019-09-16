@@ -42,7 +42,31 @@ namespace DiagnosticToolkit.Dynamo.Profiling
             this.OnPositionChanged(this);
         }
 
-        public void RequestExecution() => this.Node.MarkNodeAsModified(true);
+        public void RequestExecution()
+        {
+            RequestDownstreamExecution(this.Node);
+        }
+
+        // Based on Dynamo's https://github.com/DynamoDS/Dynamo/blob/34bd5ef798f73fe5cd6d018e0e19889c93f097cb/src/DynamoCore/Graph/Nodes/NodeModel.cs#L1021
+        private static void RequestDownstreamExecution(NodeModel node, HashSet<NodeModel> nodes = null)
+        {
+            if (nodes == null)
+                nodes = new HashSet<NodeModel>();
+
+            if (nodes.Contains(node))
+                return;
+
+            node.MarkNodeAsModified(true);
+            nodes.Add(node);
+
+            var sets = node.OutputNodes.Values;
+            var outputNodes = sets.SelectMany(set => set.Select(t => t.Item2));
+
+            foreach (var outputNode in outputNodes)
+            {
+                RequestDownstreamExecution(outputNode, nodes);
+            }
+        }
 
         public void Reset()
         {
