@@ -8,7 +8,10 @@
              xmlns:lvcMappers="clr-namespace:DiagnosticToolkit.UI.Models"
              xmlns:local="clr-namespace:DiagnosticToolkit.UI.Views"
              xmlns:customControls="clr-namespace:DiagnosticToolkit.UI.Controls"
+             xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
              mc:Ignorable="d" 
+                      
+             Dialog:DialogParticipation.Register="{Binding}"
              d:DesignHeight="600" d:DesignWidth="800">
     <controls:MetroWindow.Resources>
         <ResourceDictionary>
@@ -56,6 +59,10 @@
 
         <ScrollViewer Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <StackPanel>
+                <controls:MetroProgressBar Height="10" Grid.Row="2" DockPanel.Dock="Top"
+                                           Minimum="0" 
+                                           Maximum="{Binding TotalNodes}" 
+                                           Value="{Binding ExecutedNodes}"/>
                 <Expander Header="Scatter Plot" VerticalAlignment="Top" IsExpanded="True">
                     <lvc:CartesianChart MinHeight="300">
                         <lvc:CartesianChart.DataTooltip>
@@ -71,6 +78,24 @@
                                 <lvc:Axis.Separator>
                                     <lvc:Separator StrokeThickness="1" Stroke="#3f3f3f"/>
                                 </lvc:Axis.Separator>
+                                <lvc:Axis.Sections>
+                                    <lvc:AxisSection Value="{Binding CurrentDataPoint.X}" StrokeThickness="100" Panel.ZIndex="1">
+                                        <lvc:AxisSection.Stroke>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <LinearGradientBrush.RelativeTransform>
+                                                    <TransformGroup>
+                                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                                        <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
+                                                        <TranslateTransform/>
+                                                    </TransformGroup>
+                                                </LinearGradientBrush.RelativeTransform>
+                                                <GradientStop Offset="1"/>
+                                                <GradientStop Color="#BFFFA500"/>
+                                            </LinearGradientBrush>
+                                        </lvc:AxisSection.Stroke>
+                                    </lvc:AxisSection>
+                                </lvc:Axis.Sections>
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisX>
                         <lvc:CartesianChart.AxisY>
@@ -106,6 +131,7 @@
         </ScrollViewer>
 
         <DockPanel Grid.Row="2">
+
             <Button Content="Request Execution" HorizontalAlignment="Center" VerticalAlignment="Center"
                     ToolTip="All nodes will be executed on the next run."
                     Command="{Binding RequestAllExecutionCommand}"/>

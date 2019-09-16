@@ -20,8 +20,11 @@ namespace DiagnosticToolkit.UI.Models
             this.Instance = profilingData;
             this.Instance.PositionChanged += this.OnPositionChanged;
             this.Instance.Modified += this.OnModified;
+            this.Instance.ProfilingStarted += this.OnProfilingStarted;
             this.Weight = Math.Round(this.Instance.ExecutionTime.TotalMilliseconds);
         }
+
+        private void OnProfilingStarted(IProfilingData obj) => this.OnDataStarted(this);
 
         public void ForceExecution()
         {
@@ -46,7 +49,6 @@ namespace DiagnosticToolkit.UI.Models
 
         public event Action PointChanged;
         private void OnPointChanged() => PointChanged?.Invoke();
-
         private void OnPositionChanged(IProfilingData data)
         {
             this.X = data.X;
@@ -55,5 +57,8 @@ namespace DiagnosticToolkit.UI.Models
             this.OnPointChanged();
         }
 
+        public event Action<ProfilingDataPoint> DataStarted;
+
+        private void OnDataStarted(ProfilingDataPoint data) => this.DataStarted?.Invoke(data);
     }
 }

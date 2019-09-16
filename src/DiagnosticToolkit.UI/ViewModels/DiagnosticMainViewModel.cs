@@ -15,6 +15,7 @@ using PropertyChanged;
 using LiveCharts.Configurations;
 using TinyLittleMvvm;
 using System.Windows.Input;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace DiagnosticToolkit.UI.ViewModels
 {
@@ -24,6 +25,8 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         #region Properties
         private Dispatcher CallingDispatcher = Dispatcher.CurrentDispatcher;
+
+        private ProgressDialogController dialogController;
 
         private IProfilingManager manager;
         private IProfilingSession session;
@@ -46,7 +49,13 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
 
-        public ProfilingDataPoint SelectedData { get; set; } 
+        public ProfilingDataPoint SelectedData { get; set; }
+
+        public int TotalNodes => this.NodeProfilingData.Count;
+
+        public int ExecutedNodes { get; set; }
+
+        public ProfilingDataPoint CurrentDataPoint { get; set; }
         #endregion
 
         public DiagnosticMainViewModel(IProfilingManager manager)
@@ -109,6 +118,15 @@ namespace DiagnosticToolkit.UI.ViewModels
             this.session.DataRemoved -= this.OnDataRemoved;
         }
 
+        private ProfilingDataPoint CreateDataPoint(IProfilingData data)
+        {
+            var point = new ProfilingDataPoint(data);
+            point.DataStarted += OnDataStarted;
+
+            return point;
+        }
+
+
         private void RegisterSession(IProfilingSession session)
         {
             this.UnregisterSessionEvents(this.session);
@@ -118,7 +136,7 @@ namespace DiagnosticToolkit.UI.ViewModels
 
             if (this.session != null && this.session.ProfilingData.Any())
             {
-                var dataPoints = this.session.ProfilingData.Select(data => new ProfilingDataPoint(data));
+                var dataPoints = this.session.ProfilingData.Select(data => CreateDataPoint(data));
                 this.NodeProfilingData.AddRange(dataPoints);
             }
 
@@ -126,7 +144,7 @@ namespace DiagnosticToolkit.UI.ViewModels
         }
         private void OnSessionStarted(object sender, EventArgs e)
         {
-            //throw new NotImplementedException();
+            this.ExecutedNodes = 0;
         }
 
         private void OnSessionCleared(object sender, EventArgs e)
@@ -164,6 +182,15 @@ namespace DiagnosticToolkit.UI.ViewModels
         private void OnDataAdded(IProfilingData data)
         {
             this.NodeProfilingData.Add(new ProfilingDataPoint(data));
+        }
+
+        private void OnDataStarted(ProfilingDataPoint data)
+        {
+            CallingDispatcher.Invoke(() =>
+            {
+                this.CurrentDataPoint = data;
+                this.ExecutedNodes += 1;
+            });
         }
 
 

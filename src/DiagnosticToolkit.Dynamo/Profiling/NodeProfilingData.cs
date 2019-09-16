@@ -57,8 +57,11 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public event Action<IProfilingData> PositionChanged;
         private void OnPositionChanged(IProfilingData data) => this.PositionChanged?.Invoke(data);
 
-        public event Action<IProfilingData> ProfilingExecuted;
-        private void OnProfilingExecuted(IProfilingData data) => this.ProfilingExecuted?.Invoke(data);
+        public event Action<IProfilingData> ProfilingStarted;
+        private void OnProfilingStarted(IProfilingData data) => this.ProfilingStarted?.Invoke(data);
+
+        public event Action<IProfilingData> ProfilingEnded;
+        private void OnProfilingEnded(IProfilingData data) => this.ProfilingEnded?.Invoke(data);
         #endregion
 
         #region Dynamo Events
@@ -87,6 +90,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
         private void OnNodeExecutionBegin(NodeModel obj)
         {
+            this.OnProfilingStarted(this);
             this.startTime = DateTime.Now;
         }
 
@@ -99,7 +103,7 @@ namespace DiagnosticToolkit.Dynamo.Profiling
 
             this.endTime = DateTime.Now;
             this.ExecutionTime = this.endTime.Value.Subtract(this.startTime.Value);
-            this.OnProfilingExecuted(this);
+            this.OnProfilingEnded(this);
         }
 
         private void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
