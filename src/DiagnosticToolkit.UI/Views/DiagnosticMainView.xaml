@@ -19,7 +19,15 @@
             <ContextMenu x:Key="ProfilingNodeContextMenu"
                          DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                 <MenuItem Header="Request Execution"
-                          Command="{Binding RequestNodeExecutionCommand}"
+                          Command="{Binding RequestNodesExecutionCommand}"
+                          CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
+
+            </ContextMenu>
+
+            <ContextMenu x:Key="ProfilingNodeContextMenuChartPoint"
+                         DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type lvc:DataPointViewModel}}}">
+                <MenuItem Header="Request Execution"
+                          Command="{Binding RequestNodesExecutionCommand}"
                           CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
 
             </ContextMenu>
@@ -65,7 +73,8 @@
                         <lvc:CartesianChart.Series>
                             <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
                                            Configuration="{Binding Mapper}"
-                                           Values="{Binding NodeProfilingData}"/>
+                                           Values="{Binding NodeProfilingData}"
+                                               ContextMenu="{StaticResource ProfilingNodeContextMenuChartPoint}"/>
                         </lvc:CartesianChart.Series>
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis IsMerged="True">
@@ -84,10 +93,10 @@
                     </lvc:CartesianChart>
                 </Expander>
                 <Expander Header="Table" VerticalAlignment="Top" IsExpanded="True" MaxHeight="400">
-                    <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
-                              SelectionMode="Single"
+                    <customControls:ItemsDataGrid IsReadOnly="True" AutoGenerateColumns="False"
+                                                  Style="{StaticResource MetroDataGrid}"
                               ItemsSource="{Binding NodeProfilingData}"
-                              SelectedItem="{Binding SelectedData}"
+                              SelectedElements="{Binding SelectedNodes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               ContextMenu="{StaticResource ProfilingNodeContextMenu}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Instance.Id}"/>
@@ -101,7 +110,7 @@
                             </DataGridTextColumn>
                         </DataGrid.Columns>
 
-                    </DataGrid>
+                    </customControls:ItemsDataGrid>
                 </Expander>
             </StackPanel>
         </ScrollViewer>

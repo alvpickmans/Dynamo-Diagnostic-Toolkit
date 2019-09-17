@@ -15,6 +15,14 @@ namespace DiagnosticToolkit.UI.Models
         [DoNotCheckEquality]
         public IProfilingData Instance { get; private set; }
 
+        public bool Selected
+        {
+            get => this.Instance.Selected;
+            set => this.Instance.Selected = value;
+        }
+
+        public double StrokeThickness => this.Selected ? 2d : 0d;
+
         public ProfilingDataPoint(IProfilingData profilingData) : base(profilingData.X, profilingData.Y)
         {
             this.Instance = profilingData;

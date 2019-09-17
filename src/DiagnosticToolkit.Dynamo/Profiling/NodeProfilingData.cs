@@ -26,6 +26,18 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public double X { get; private set; }
         public double Y { get; private set; }
 
+        public bool Selected
+        {
+            get => this.Node.IsSelected;
+            set
+            {
+                if (value)
+                    this.Node.Select();
+                else
+                    this.Node.IsSelected = false;
+            }
+        }
+
 
         public NodeProfilingData(NodeModel node)
         {
@@ -129,10 +141,10 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         private void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
 
-            if (e.PropertyName == nameof(NodeModel.Position))
+            if (e.PropertyName.Equals(nameof(NodeModel.Position)))
                 this.UpdatePosition(this.Node.Position);
 
-            if (e.PropertyName == nameof(NodeModel.Name))
+            if (e.PropertyName.Equals(nameof(NodeModel.Name)) || e.PropertyName.Equals(nameof(NodeModel.IsSelected)))
                 this.OnModified(this);               
 
         } 
