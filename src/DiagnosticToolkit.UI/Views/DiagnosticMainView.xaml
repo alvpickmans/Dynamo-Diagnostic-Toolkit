@@ -57,7 +57,8 @@
         <ScrollViewer Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Expander Header="Scatter Plot" VerticalAlignment="Top" IsExpanded="True">
-                    <lvc:CartesianChart MinHeight="300">
+                    <lvc:CartesianChart MinHeight="300"
+                                        DataClickCommand="{Binding DataPointClickCommand}">
                         <lvc:CartesianChart.DataTooltip>
                             <customControls:NodeDataTooltip/>
                         </lvc:CartesianChart.DataTooltip>

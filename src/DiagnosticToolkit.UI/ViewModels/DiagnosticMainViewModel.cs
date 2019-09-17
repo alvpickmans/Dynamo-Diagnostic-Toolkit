@@ -190,6 +190,12 @@ namespace DiagnosticToolkit.UI.ViewModels
             this.SelectedData.ForceExecution();
         }
 
+        public ICommand DataPointClickCommand => new RelayCommand<ChartPoint>(DataPointClickExecute);
+        public void DataPointClickExecute(ChartPoint dataPoint)
+        {
+            this.SelectedData = dataPoint.Instance as ProfilingDataPoint;
+        }
+
         #endregion
     }
 }
