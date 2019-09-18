@@ -46,21 +46,6 @@ namespace DiagnosticToolkit.UI.ViewModels
         public ChartValues<ProfilingDataPoint> NodeProfilingData { get; private set; }
 
         public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
-
-        private List<ProfilingDataPoint> selectedNodes { get; set; }
-        public IList SelectedNodes
-        {
-            get => selectedNodes;
-            set
-            {
-                this.selectedNodes?.ForEach(node => node.Selected = false);
-                this.selectedNodes = value.OfType<ProfilingDataPoint>().Select(node =>
-                {
-                    node.Selected = true;
-                    return node;
-                }).ToList();
-            }
-        }
         #endregion
 
         public DiagnosticMainViewModel(IProfilingManager manager)
@@ -88,18 +73,6 @@ namespace DiagnosticToolkit.UI.ViewModels
             this.UnregisterEvents();
             this.UnregisterSessionEvents(this.session);
         }
-
-        //public void OnPropertyChanged(string propertyName, object before, object after)
-        //{
-        //    //Perform property validation
-        //    if (propertyName.Equals(nameof(SelectedNodes)))
-        //    {
-        //        if (before is List<ProfilingDataPoint> beforeData) beforeData.ForEach(data => data.Selected = false);
-        //        if (after is List<ProfilingDataPoint> afterData) afterData.ForEach(data => data.Selected = false);
-        //    }
-
-        //    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
 
         #region Events
 
@@ -204,6 +177,8 @@ namespace DiagnosticToolkit.UI.ViewModels
             this.RequestAllExecutionCommand = new RelayCommand(RequestAllExecutionExecute, CanRequestAllExecution);
             this.RequestNodesExecutionCommand = new RelayCommand<IList>(RequestNodesExecutionExecute, CanRequestNodesExecution);
             this.DataPointClickCommand = new RelayCommand<ChartPoint>(DataPointClickExecute);
+            this.ChartDoubleClickCommand = new RelayCommand(ChartDoubleClickExecute);
+            this.SelectionChangedCommand = new RelayCommand<IList>(SelectionChangedExecute);
         }
 
         public ICommand RequestAllExecutionCommand { get; private set; }
@@ -234,10 +209,29 @@ namespace DiagnosticToolkit.UI.ViewModels
         public ICommand DataPointClickCommand { get; private set; }
         public void DataPointClickExecute(ChartPoint dataPoint)
         {
-            var data = dataPoint.Instance as ProfilingDataPoint;
-            data.Selected = true;
-            this.SelectedNodes.Add(data);
-            
+            if (dataPoint.Instance is ProfilingDataPoint data)
+                data.Selected = true;
+        }
+
+        public ICommand ChartDoubleClickCommand { get; private set; }
+        public void ChartDoubleClickExecute()
+        {
+            foreach (var data in this.NodeProfilingData)
+            {
+                data.Selected = false;
+            }
+        }
+
+        public ICommand SelectionChangedCommand { get; private set; }
+        public void SelectionChangedExecute(IList obj)
+        {
+            var selected = obj.OfType<ProfilingDataPoint>().ToDictionary(data => data.Instance.Id);
+
+            foreach (var item in this.NodeProfilingData)
+            {
+                item.Selected = selected.ContainsKey(item.Instance.Id);
+            }
+
         }
 
         #endregion

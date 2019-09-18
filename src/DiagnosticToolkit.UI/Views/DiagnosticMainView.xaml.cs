@@ -34,5 +34,10 @@ namespace DiagnosticToolkit.UI.Views
                 this.viewModel.Dispose();
             };
         }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
