@@ -78,8 +78,9 @@
                         </lvc:CartesianChart.DataTooltip>
                         <lvc:CartesianChart.Series>
                             <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
-                                           Configuration="{Binding Mapper}"
-                                           Values="{Binding NodeProfilingData}"
+                                               Configuration="{Binding Mapper}"
+                                               Values="{Binding NodeProfilingData}"
+                                               StrokeThickness="3"
                                                ContextMenu="{StaticResource ProfilingNodeContextMenuChartPoint}"/>
                         </lvc:CartesianChart.Series>
                         <lvc:CartesianChart.AxisX>
