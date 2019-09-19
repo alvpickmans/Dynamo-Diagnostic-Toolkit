@@ -25,14 +25,6 @@
 
             </ContextMenu>
 
-            <ContextMenu x:Key="ProfilingNodeContextMenuChartPoint"
-                         DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type lvc:ScatterSeries}}}">
-                <MenuItem Header="Request Execution"
-                          Command="{Binding RequestNodesExecutionCommand}"
-                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
-
-            </ContextMenu>
-
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <Grid>
@@ -76,12 +68,11 @@
                         <lvc:CartesianChart.DataTooltip>
                             <customControls:NodeDataTooltip/>
                         </lvc:CartesianChart.DataTooltip>
-                        <lvc:CartesianChart.Series>
-                            <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
+                        <lvc:CartesianChart.Series >
+                            <lvc:ScatterSeries MinPointShapeDiameter="5" MaxPointShapeDiameter="50"
                                                Configuration="{Binding Mapper}"
                                                Values="{Binding NodeProfilingData}"
-                                               StrokeThickness="3"
-                                               ContextMenu="{StaticResource ProfilingNodeContextMenuChartPoint}"/>
+                                               StrokeThickness="3"/>
                         </lvc:CartesianChart.Series>
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis IsMerged="True">
@@ -103,7 +94,7 @@
                     <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
                               Style="{StaticResource MetroDataGrid}"
                               ItemsSource="{Binding NodeProfilingData}"
-                              SelectionChanged="DataGrid_SelectionChanged"
+                              SelectedItem="{Binding SelectedNode}"
                               ContextMenu="{StaticResource ProfilingNodeContextMenu}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">

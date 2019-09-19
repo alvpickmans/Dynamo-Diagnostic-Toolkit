@@ -45,6 +45,8 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public ChartValues<ProfilingDataPoint> NodeProfilingData { get; private set; }
 
+        public ProfilingDataPoint SelectedNode { get; set; }
+
         public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
         #endregion
 
@@ -210,7 +212,10 @@ namespace DiagnosticToolkit.UI.ViewModels
         public void DataPointClickExecute(ChartPoint dataPoint)
         {
             if (dataPoint.Instance is ProfilingDataPoint data)
+            {
                 data.Selected = true;
+                this.SelectedNode = data;
+            }
         }
 
         public ICommand ChartDoubleClickCommand { get; private set; }
@@ -220,6 +225,8 @@ namespace DiagnosticToolkit.UI.ViewModels
             {
                 data.Selected = false;
             }
+
+            this.SelectedNode = null;
         }
 
         public ICommand SelectionChangedCommand { get; private set; }
