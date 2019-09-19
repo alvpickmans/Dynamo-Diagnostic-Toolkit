@@ -15,6 +15,7 @@ using PropertyChanged;
 using LiveCharts.Configurations;
 using TinyLittleMvvm;
 using System.Windows.Input;
+using System.Collections;
 
 namespace DiagnosticToolkit.UI.ViewModels
 {
@@ -44,9 +45,9 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         public ChartValues<ProfilingDataPoint> NodeProfilingData { get; private set; }
 
-        public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
+        public ProfilingDataPoint SelectedNode { get; set; }
 
-        public ProfilingDataPoint SelectedData { get; set; } 
+        public WeightedMapper<ProfilingDataPoint> Mapper => ChartMappers.ProfilingDataPointMapper;
         #endregion
 
         public DiagnosticMainViewModel(IProfilingManager manager)
@@ -55,6 +56,8 @@ namespace DiagnosticToolkit.UI.ViewModels
 
             this.RegisterSession(this.manager.CurrentSession);
             this.RegisterEvents();
+
+            this.InitializeCommands();
         }
 
         private void NodeProfilingDataFilter(object sender, FilterEventArgs e)
@@ -171,7 +174,16 @@ namespace DiagnosticToolkit.UI.ViewModels
 
         #region Commands
 
-        public ICommand RequestAllExecutionCommand => new RelayCommand(RequestAllExecutionExecute, CanRequestAllExecution);
+        public void InitializeCommands()
+        {
+            this.RequestAllExecutionCommand = new RelayCommand(RequestAllExecutionExecute, CanRequestAllExecution);
+            this.RequestNodesExecutionCommand = new RelayCommand<IList>(RequestNodesExecutionExecute, CanRequestNodesExecution);
+            this.DataPointClickCommand = new RelayCommand<ChartPoint>(DataPointClickExecute);
+            this.ChartDoubleClickCommand = new RelayCommand(ChartDoubleClickExecute);
+            this.SelectionChangedCommand = new RelayCommand<IList>(SelectionChangedExecute);
+        }
+
+        public ICommand RequestAllExecutionCommand { get; private set; }
 
         public bool CanRequestAllExecution() => this.NodeProfilingData.Any(data => data.Instance.CanRequestExecution && !data.Instance.HasExecutionPending);
 
@@ -183,11 +195,50 @@ namespace DiagnosticToolkit.UI.ViewModels
             }
         }
 
-        public ICommand RequestNodeExecutionCommand => new RelayCommand<object>(RequestNodeExecutionExecute, CanRequestNodeExecution);
-        public bool CanRequestNodeExecution(object obj) => this.SelectedData != null;
-        public void RequestNodeExecutionExecute(object obj)
+        public ICommand RequestNodesExecutionCommand { get; private set; }
+        public bool CanRequestNodesExecution(IList obj) => obj.OfType<ProfilingDataPoint>().Any(data => !data.Instance.HasExecutionPending);
+        public void RequestNodesExecutionExecute(IList obj)
         {
-            this.SelectedData.ForceExecution();
+            var dataPoints = obj.OfType<ProfilingDataPoint>();
+
+            foreach (var dataPoint in dataPoints)
+            {
+                if(!dataPoint.Instance.HasExecutionPending)
+                    dataPoint.ForceExecution();
+            }
+        }
+
+        public ICommand DataPointClickCommand { get; private set; }
+        public void DataPointClickExecute(ChartPoint dataPoint)
+        {
+            if (dataPoint.Instance is ProfilingDataPoint data)
+            {
+                data.Selected = true;
+                this.SelectedNode = data;
+            }
+        }
+
+        public ICommand ChartDoubleClickCommand { get; private set; }
+        public void ChartDoubleClickExecute()
+        {
+            foreach (var data in this.NodeProfilingData)
+            {
+                data.Selected = false;
+            }
+
+            this.SelectedNode = null;
+        }
+
+        public ICommand SelectionChangedCommand { get; private set; }
+        public void SelectionChangedExecute(IList obj)
+        {
+            var selected = obj.OfType<ProfilingDataPoint>().ToDictionary(data => data.Instance.Id);
+
+            foreach (var item in this.NodeProfilingData)
+            {
+                item.Selected = selected.ContainsKey(item.Instance.Id);
+            }
+
         }
 
         #endregion

@@ -16,6 +16,8 @@ namespace DiagnosticToolkit.Core.Interfaces
         string Name { get; }
         string Id { get; }
 
+        bool Selected { get; set; }
+
         double X { get; }
         double Y { get; }
 

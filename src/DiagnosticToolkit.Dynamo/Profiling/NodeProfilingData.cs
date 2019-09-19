@@ -23,23 +23,26 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         public string NodeId => this.Node?.GUID.ToString();
         public string Name => this.Node.Name;
         public string Id => this.Node.GUID.ToString();
-        public double X { get; private set; }
-        public double Y { get; private set; }
+        public double X => this.Node.CenterX;
+        public double Y => this.Node.CenterY * -1;
+
+        public bool Selected
+        {
+            get => this.Node.IsSelected;
+            set
+            {
+                if (value)
+                    this.Node.Select();
+                else
+                    this.Node.IsSelected = false;
+            }
+        }
 
 
         public NodeProfilingData(NodeModel node)
         {
             this.Node = node;
             this.RegisterEvents();
-        }
-
-        private void UpdatePosition(Point2D position)
-        {
-            this.X = position.X;
-            // Dynamo considers the Y axis positive to be from top to bottom
-            this.Y = position.Y * -1;
-
-            this.OnPositionChanged(this);
         }
 
         public void RequestExecution()
@@ -129,10 +132,10 @@ namespace DiagnosticToolkit.Dynamo.Profiling
         private void OnNodePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
 
-            if (e.PropertyName == nameof(NodeModel.Position))
-                this.UpdatePosition(this.Node.Position);
+            if (e.PropertyName.Equals(nameof(NodeModel.Position)))
+                this.OnPositionChanged(this);
 
-            if (e.PropertyName == nameof(NodeModel.Name))
+            if (e.PropertyName.Equals(nameof(NodeModel.Name)) || e.PropertyName.Equals(nameof(NodeModel.IsSelected)))
                 this.OnModified(this);               
 
         } 

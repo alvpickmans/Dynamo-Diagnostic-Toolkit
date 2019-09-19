@@ -18,11 +18,13 @@ namespace DiagnosticToolkit.UI.Controls
 
         public IList SelectedElements
         {
-            get { return (IList)GetValue(SelectedItemsListProperty); }
-            set { SetValue(SelectedItemsListProperty, value); }
+            get { return (IList)GetValue(SelectedElementsProperty); }
+            set { SetValue(SelectedElementsProperty, value); }
         }
 
-        public static readonly DependencyProperty SelectedItemsListProperty =
+        public static readonly DependencyProperty SelectedElementsProperty =
                     DependencyProperty.Register(nameof(SelectedElements), typeof(IList), typeof(ItemsDataGrid), new PropertyMetadata(null));
+
+
     }
 }

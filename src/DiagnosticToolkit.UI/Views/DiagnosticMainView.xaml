@@ -7,6 +7,7 @@
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:lvcMappers="clr-namespace:DiagnosticToolkit.UI.Models"
              xmlns:local="clr-namespace:DiagnosticToolkit.UI.Views"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:customControls="clr-namespace:DiagnosticToolkit.UI.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
@@ -19,8 +20,8 @@
             <ContextMenu x:Key="ProfilingNodeContextMenu"
                          DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                 <MenuItem Header="Request Execution"
-                          Command="{Binding RequestNodeExecutionCommand}"
-                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
+                          Command="{Binding RequestNodesExecutionCommand}"
+                          CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
 
             </ContextMenu>
 
@@ -57,14 +58,21 @@
         <ScrollViewer Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Expander Header="Scatter Plot" VerticalAlignment="Top" IsExpanded="True">
-                    <lvc:CartesianChart MinHeight="300">
+                    <lvc:CartesianChart MinHeight="300"
+                                        DataClickCommand="{Binding DataPointClickCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <i:InvokeCommandAction Command="{Binding ChartDoubleClickCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <lvc:CartesianChart.DataTooltip>
                             <customControls:NodeDataTooltip/>
                         </lvc:CartesianChart.DataTooltip>
-                        <lvc:CartesianChart.Series>
-                            <lvc:ScatterSeries MinPointShapeDiameter="2" MaxPointShapeDiameter="50"
-                                           Configuration="{Binding Mapper}"
-                                           Values="{Binding NodeProfilingData}"/>
+                        <lvc:CartesianChart.Series >
+                            <lvc:ScatterSeries MinPointShapeDiameter="5" MaxPointShapeDiameter="50"
+                                               Configuration="{Binding Mapper}"
+                                               Values="{Binding NodeProfilingData}"
+                                               StrokeThickness="3"/>
                         </lvc:CartesianChart.Series>
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis IsMerged="True">
@@ -84,10 +92,16 @@
                 </Expander>
                 <Expander Header="Table" VerticalAlignment="Top" IsExpanded="True" MaxHeight="400">
                     <DataGrid IsReadOnly="True" AutoGenerateColumns="False"
-                              SelectionMode="Single"
+                              Style="{StaticResource MetroDataGrid}"
                               ItemsSource="{Binding NodeProfilingData}"
-                              SelectedItem="{Binding SelectedData}"
+                              SelectedItem="{Binding SelectedNode}"
                               ContextMenu="{StaticResource ProfilingNodeContextMenu}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" 
+                                    CommandParameter="{Binding Path=SelectedItems, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Instance.Id}"/>
                             <DataGridTextColumn Header="Name" Binding="{Binding Instance.Name}"/>
